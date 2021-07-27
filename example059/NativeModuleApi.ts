@@ -7,5 +7,6 @@
  *    ToastExample.LONG
  */
 import { NativeModules } from "react-native"
-const { ToastExample, CredifySdk } = NativeModules
-export { ToastExample, CredifySdk }
+const { ToastExample, CredifySdk, CredifySdkManager } = NativeModules
+
+export { ToastExample, CredifySdk, CredifySdkManager }

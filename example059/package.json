@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
+    "log-ios": "xcrun simctl spawn booted log stream --predicate 'eventMessage contains \"Credify\"'",
+    "log-android": "logkitty android tag CredifySDK",
     "test": "jest"
   },
   "dependencies": {

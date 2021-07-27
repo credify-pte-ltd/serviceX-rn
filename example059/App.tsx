@@ -8,7 +8,7 @@
 
 import React, { Component } from "react"
 import { Button, Platform, StyleSheet, Text, View } from "react-native"
-import { ToastExample, CredifySdk } from "./NativeModuleApi"
+import { ToastExample, CredifySdk, CredifySdkManager } from "./NativeModuleApi"
 
 const App = () => {
   console.log("Hello APP!!!!")
@@ -46,6 +46,13 @@ const App = () => {
       <Button
         onPress={() => CredifySdk.showOfferDetail("1")}
         title="Show offer detail"
+        color="#841584"
+      />
+
+      <View style={{ marginTop: 10 }} />
+      <Button
+        onPress={() => CredifySdkManager.addEvent("Credify Danh Event")}
+        title="Show event added ios"
         color="#841584"
       />
     </View>
