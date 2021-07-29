@@ -6,13 +6,24 @@
  * @flow
  */
 
-import React, { Component } from "react"
-import { Button, Platform, StyleSheet, Text, View } from "react-native"
+import React from "react"
+import { Button, StyleSheet, Text, View } from "react-native"
+import ServiceXSdk from "servicex-sdk-rn"
 
 const App = () => {
   console.log("Hello APP!!!!")
-  function offerListHandler() {}
-  function showOfferDetail() {}
+  async function offerListHandler() {
+    try {
+      const offers = await ServiceXSdk.getOffers("2")
+      console.log({ offers })
+    } catch (error) {
+      console.log({ error })
+    }
+  }
+
+  function showOfferDetail() {
+    ServiceXSdk.showOfferDetail("2")
+  }
 
   return (
     <View style={styles.container}>
