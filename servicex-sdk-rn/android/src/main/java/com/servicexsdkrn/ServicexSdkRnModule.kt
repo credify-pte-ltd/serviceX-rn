@@ -1,4 +1,4 @@
-package com.example059;
+package com.servicexsdkrn
 
 import android.widget.Toast;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -19,8 +19,13 @@ import com.google.gson.Gson
 import com.facebook.react.bridge.Callback;
 import com.google.gson.annotations.SerializedName
 import org.json.JSONObject
+import com.facebook.react.bridge.Promise;
 
-class CredifySdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+
+    override fun getName(): String {
+        return "ServicexSdkRn"
+    }
 
     private var mMarketAccessToken: String? = null
 
@@ -92,16 +97,14 @@ class CredifySdkModule(reactContext: ReactApplicationContext) : ReactContextBase
         queue.add(stringRequest)
     }
 
-    override fun getName() = "CredifySdk"
     var offer: Offer? = null
 
     @ReactMethod
-    fun getOfferList(message: String, successCallback: Callback,
-                     errorCallback: Callback) {
+    fun getOfferList(message: String, promise: Promise) {
         val params = GetOfferListParam(
                 phoneNumber = "707245595",
                 countryCode = "+84",
-                localId = "1",
+                localId = "2",
                 credifyId = ""
         )
 
@@ -120,12 +123,12 @@ class CredifySdkModule(reactContext: ReactApplicationContext) : ReactContextBase
                         val gson = Gson()
                         val json = gson.toJson(model)
                         Log.d("CredifySDK", json)
-                        successCallback.invoke(json)
+                        promise.resolve(json);
                     }
 
                     override fun onError(throwable: CredifyError) {
                         Log.d("CredifySDK", "Error: ${throwable.throwable}")
-                        errorCallback.invoke(throwable.throwable?.message);
+                        promise.reject(throwable.throwable?.message);
                     }
                 }
         )
@@ -170,10 +173,48 @@ class CredifySdkModule(reactContext: ReactApplicationContext) : ReactContextBase
     }
 
     @ReactMethod
+    fun showReferral(message: String) {
+       val mUserProfile = UserProfile(
+                id = "2",
+                name = Name(
+                        firstName = "Garnet",
+                        lastName = "Mertz",
+                        middleName = null,
+                        name = null,
+                        verified = true
+                ),
+                phone = Phone(
+                        phoneNumber = "707245595",
+                        countryCode = "+84",
+                        verified = true
+                ),
+                email = "Myrl17@yahoo.com",
+                dob = null,
+                address = null
+        )
+
+        CredifySDK.instance.showReferralResult(
+                    context = this.currentActivity!!,
+                    userProfile = mUserProfile,
+                    marketName = Constants.MARKET_NAME,
+                    callback = object : CredifySDK.OnShowReferralResultCallback {
+                        override fun onShow() {
+                        }
+
+                        override fun onError(ex: Exception) {
+                        }
+
+                        override fun onClose() {
+                        }
+                    }
+                )
+      }
+
+    @ReactMethod
     fun showOfferDetail(message: String) {
 
         val mUserProfile = UserProfile(
-                id = "1",
+                id = "2",
                 name = Name(
                         firstName = "Garnet",
                         lastName = "Mertz",
@@ -219,4 +260,6 @@ class CredifySdkModule(reactContext: ReactApplicationContext) : ReactContextBase
                 }
         )
     }
+
+    
 }
