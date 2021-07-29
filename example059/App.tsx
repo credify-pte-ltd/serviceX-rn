@@ -8,19 +8,11 @@
 
 import React, { Component } from "react"
 import { Button, Platform, StyleSheet, Text, View } from "react-native"
-import { ToastExample, CredifySdk, CredifySdkManager } from "./NativeModuleApi"
 
 const App = () => {
   console.log("Hello APP!!!!")
-  function offerListHandler() {
-    try {
-      const model = CredifySdk.getOfferList("1")
-      console.log({ model })
-      console.log({ jsonObject: JSON.parse(model) })
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  function offerListHandler() {}
+  function showOfferDetail() {}
 
   return (
     <View style={styles.container}>
@@ -32,15 +24,8 @@ const App = () => {
 
       <View style={{ marginTop: 10 }} />
       <Button
-        onPress={() => CredifySdk.showOfferDetail("1")}
+        onPress={showOfferDetail}
         title="Show offer detail"
-        color="#841584"
-      />
-
-      <View style={{ marginTop: 10 }} />
-      <Button
-        onPress={() => CredifySdkManager.addEvent("Credify Danh Event")}
-        title="Show event added ios"
         color="#841584"
       />
     </View>

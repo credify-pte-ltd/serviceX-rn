@@ -24,8 +24,6 @@
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		A29161C2BF4A1F9A717C9595 /* Pods_example059.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B1AEB68CA93E0C4B1571175 /* Pods_example059.framework */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
-		DBC5F35726B0196900E3B01C /* CredifySdkManagerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = DBC5F35626B0196900E3B01C /* CredifySdkManagerBridge.m */; };
-		DBC5F35C26B01E1600E3B01C /* CredifySdkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC5F35326B018F900E3B01C /* CredifySdkManager.swift */; };
 		ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -318,9 +316,6 @@
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 		C7C71095FE0AC15FE05E74CE /* Pods-example059.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-example059.debug.xcconfig"; path = "Target Support Files/Pods-example059/Pods-example059.debug.xcconfig"; sourceTree = "<group>"; };
-		DBC5F35226B018F900E3B01C /* example059-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "example059-Bridging-Header.h"; sourceTree = "<group>"; };
-		DBC5F35326B018F900E3B01C /* CredifySdkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredifySdkManager.swift; sourceTree = "<group>"; };
-		DBC5F35626B0196900E3B01C /* CredifySdkManagerBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CredifySdkManagerBridge.m; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -437,11 +432,8 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				DBC5F35626B0196900E3B01C /* CredifySdkManagerBridge.m */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				DBC5F35326B018F900E3B01C /* CredifySdkManager.swift */,
-				DBC5F35226B018F900E3B01C /* example059-Bridging-Header.h */,
 			);
 			name = example059;
 			sourceTree = "<group>";
@@ -961,7 +953,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		8182783693CF41BC81B78E64 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1018,8 +1010,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DBC5F35726B0196900E3B01C /* CredifySdkManagerBridge.m in Sources */,
-				DBC5F35C26B01E1600E3B01C /* CredifySdkManager.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
