@@ -13,6 +13,8 @@ export default function App() {
     }
   }
 
+  async function fetchFilms() {}
+
   return (
     <View style={styles.container}>
       <Button
@@ -27,6 +29,8 @@ export default function App() {
         title="Show offer detail"
         color="#841584"
       />
+      <View style={{ marginTop: 10 }} />
+      <Button onPress={fetchFilms} title="fetch film " color="#841584" />
     </View>
   );
 }
