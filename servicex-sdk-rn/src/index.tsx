@@ -9,6 +9,9 @@ type ServicexSdkRnType = {
   setCredifyId(id: string): void;
   setUserProfile(payload: UserPayload): void;
   setPushClaimRequestStatus(isSuccess: boolean): void;
+  showReferral(): void;
+  clearCache(): void;
+  initialize(apiKey: string, environment: string, marketName: string): void;
 };
 
 type OfferListRes = {
@@ -36,8 +39,16 @@ export async function getOffers(payload: UserPayload): Promise<OfferListRes> {
   }
 }
 
+export function clearCache() {
+  ServicexSdkNative.clearCache();
+}
+
 export function showOfferDetail(id: string, pushClaimCB: PushClaimCB) {
   ServicexSdkNative.showOfferDetail(id, pushClaimCB);
+}
+
+export function showReferralResult() {
+  ServicexSdkNative.showReferral();
 }
 
 export function setCredifyId(id: string) {
@@ -52,6 +63,14 @@ export function setPushClaimRequestStatus(isSuccess: boolean) {
   ServicexSdkNative.setPushClaimRequestStatus(isSuccess);
 }
 
+export function initialize(
+  apiKey: string,
+  environment: string,
+  marketName: string
+) {
+  ServicexSdkNative.initialize(apiKey, environment, marketName);
+}
+
 const ServiceXSdk = {
   init,
   getOffers,
@@ -59,6 +78,9 @@ const ServiceXSdk = {
   setUserProfile,
   setCredifyId,
   setPushClaimRequestStatus,
+  showReferralResult,
+  initialize,
+  clearCache,
 };
 
 export default ServiceXSdk;

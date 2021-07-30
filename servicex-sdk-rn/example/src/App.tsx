@@ -14,35 +14,30 @@ import {
 } from 'react-native';
 import ServiceXSdk, { OfferData, UserPayload } from 'servicex-sdk-rn';
 
+const API_KEY =
+  '4nN5UifKTRxR1At4syeBHM6e4p0cFOdoqsuUKOIgSYBEJRa8UpGprqorfyWFgdVk';
+const ENV = 'SANDBOX';
+const PUSH_CLAIM_URL = 'https://sandbox-demo-api.credify.dev/tiki/push-claims';
+const DEMO_USER_URL = 'https://sandbox-demo-api.credify.dev/tiki/demo-user';
+const MARKET_NAME = 'tiki';
+
 export default function App() {
   const [user, setUser] = useState<any>(null);
   const [idText, onChangeText] = useState<string>('');
   const [offersData, setOffers] = useState<OfferData[]>([]);
-  const [isLoading, showLoading] = useState<Boolean>(false);
+  const [isLoading, showLoading] = useState<boolean>(false);
 
-  // async function getAccessToken() {
-  //   const res = await fetch('https://uat-api.credify.dev/v1/token', {
-  //     method: 'POST',
-  //     headers: {
-  //       'x-api-key':
-  //         'WaXSjOqK0JqSOH1VJ6Op1kkQTdPAhffv5bflck7SzwRjCK0MqUmjSHyvfAan3djf',
-  //     },
-  //   });
-  //   const json = res.json();
-  //   //@ts-ignore
-  //   const accessToken = json.data.access_token;
-  //   console.log({ accessToken });
-  //   return accessToken;
-  // }
-  //1832
+  useEffect(() => {
+    ServiceXSdk.initialize(API_KEY, ENV, MARKET_NAME);
+    getDemoUsers();
+  }, []);
 
   async function offerListHandler() {
     if (!user) {
       return;
     }
-
+    ServiceXSdk.clearCache();
     showLoading(true);
-
     try {
       const payload: UserPayload = {
         phone_number: user.phoneNumber,
@@ -64,15 +59,15 @@ export default function App() {
     showLoading(false);
   }
 
-  async function showReferal() {}
+  async function showReferal() {
+    ServiceXSdk.showReferralResult();
+  }
 
   async function getDemoUsers() {
     setOffers([]);
     showLoading(true);
     try {
-      const res = await fetch(
-        'https://sandbox-demo-api.credify.dev/tiki/demo-user?id=' + idText
-      );
+      const res = await fetch(`${DEMO_USER_URL}?id=${idText}`);
       const _user = await res.json();
       console.log({ _user });
       setUser(_user);
@@ -117,25 +112,18 @@ export default function App() {
       credify_id: credifyId,
     };
     try {
-      const res = await fetch(
-        'https://sandbox-demo-api.credify.dev/tiki/push-claims',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-        }
-      );
+      const res = await fetch(PUSH_CLAIM_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
       return res.json();
     } catch (error) {
       throw error;
     }
   }
-
-  useEffect(() => {
-    getDemoUsers();
-  }, []);
 
   const renderItem = ({ item }: { item: OfferData }) => {
     return (
@@ -172,7 +160,7 @@ export default function App() {
 
       <View style={{ marginTop: 10 }} />
       <Button onPress={showReferal} title="Show referal " color="#841584" />
-      <Text>Current user ID</Text>
+      <Text>Current user ID (Empty the input to get random user)</Text>
       <TextInput
         style={{ borderWidth: 1, borderColor: 'grey' }}
         onChangeText={onChangeText}
