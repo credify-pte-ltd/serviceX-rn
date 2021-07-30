@@ -58,7 +58,8 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
 
   @ReactMethod
   fun getOfferList(userDict: ReadableMap, promise: Promise) {
-
+    CredifySDK.instance.clearCache()
+    
     val params = GetOfferListParam(
       phoneNumber = userDict.getString("phone_number"),
       countryCode = userDict.getString("country_code"),
