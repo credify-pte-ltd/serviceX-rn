@@ -118,7 +118,7 @@ export default function App() {
     };
     try {
       const res = await fetch(
-        'https://sandbox-demo-api.credify.dev/tiki/sendo/push-claims',
+        'https://sandbox-demo-api.credify.dev/tiki/push-claims',
         {
           method: 'POST',
           headers: {

@@ -181,6 +181,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     val _offer = getOffer(offerId)
     Log.d("CredifySDK", "OFFER ID = " + _offer?.id)
     Log.d("CredifySDK", "mCredifyId = " + mCredifyId)
+    Log.d("CredifySDK", "mUserProfile ID = " + mUserProfile?.id?.toString())
 
     CredifySDK.instance.showOffer(
       context = this.currentActivity!!,
