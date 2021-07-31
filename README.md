@@ -14,7 +14,7 @@ or
 npm install servicex-sdk-rn
 ```
 
-Then link the native module if your project does not support auto link (RN version < 0.6x.x)
+Then link the native module if your project does not support auto link (RN version < 0.60)
 
 ```sh
 react-native link
@@ -43,7 +43,6 @@ ServiceXSdk.setCredifyId(credifyId)
 const res = await ServiceXSdk.getOffers(payload)
 
 //** Show offer detail
-ServiceXSdk.clearCache()
 ServiceXSdk.showOfferDetail(
   offerId,
   async (localId: string, credifyId: string) => {
@@ -59,7 +58,6 @@ ServiceXSdk.showOfferDetail(
 )
 
 //** If you want to show the referral result for the current user
-ServiceXSdk.clearCache()
 ServiceXSdk.showReferralResult()
 ```
 
