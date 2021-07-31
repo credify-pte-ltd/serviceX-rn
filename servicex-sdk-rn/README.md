@@ -25,42 +25,42 @@ react-native link
 Please refer to the example project inside the SDK to see how it work with our demo server
 
 ```js
-import ServiceXSdk from "servicex-sdk-rn"
+import ServiceXSdk from 'servicex-sdk-rn';
 
 //** Initialize project
-ServiceXSdk.initialize(API_KEY, ENV, MARKET_NAME)
+ServiceXSdk.initialize(API_KEY, ENV, MARKET_NAME);
 
 // Clear old user in the SDK
-ServiceXSdk.clearCache()
+ServiceXSdk.clearCache();
 
 //** You need to tell SDK what is current user profile
-ServiceXSdk.setUserProfile(userProfile)
+ServiceXSdk.setUserProfile(userProfile);
 
 //** And it credifyId if have
-ServiceXSdk.setCredifyId(credifyId)
+ServiceXSdk.setCredifyId(credifyId);
 
 //** Show offers list
-const res = await ServiceXSdk.getOffers(payload)
+const res = await ServiceXSdk.getOffers(payload);
 
 //** Show offer detail
-ServiceXSdk.clearCache()
+ServiceXSdk.clearCache();
 ServiceXSdk.showOfferDetail(
   offerId,
   async (localId: string, credifyId: string) => {
     //** You need to add your push claim request in this callback and tell the SDK for the result
     try {
-      const res = await pushClaim(localId, credifyId)
-      console.log({ res })
-      ServiceXSdk.setPushClaimRequestStatus(true)
+      const res = await pushClaim(localId, credifyId);
+      console.log({ res });
+      ServiceXSdk.setPushClaimRequestStatus(true);
     } catch (error) {
-      ServiceXSdk.setPushClaimRequestStatus(false)
+      ServiceXSdk.setPushClaimRequestStatus(false);
     }
   }
-)
+);
 
 //** If you want to show the referral result for the current user
-ServiceXSdk.clearCache()
-ServiceXSdk.showReferralResult()
+ServiceXSdk.clearCache();
+ServiceXSdk.showReferralResult();
 ```
 
 ## Contributing
