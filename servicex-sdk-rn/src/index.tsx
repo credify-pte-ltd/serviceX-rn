@@ -4,6 +4,7 @@ import type { components } from '@credify/api-docs';
 type PushClaimCB = (localId: string, credifyId: string) => void;
 
 type ServicexSdkRnType = {
+  initialize(apiKey: string, environment: string, marketName: string): void;
   getOfferList(payload: UserPayload): Promise<string>;
   showOfferDetail(id: string, pushClaimCB: PushClaimCB): void;
   setCredifyId(id: string): void;
@@ -11,7 +12,6 @@ type ServicexSdkRnType = {
   setPushClaimRequestStatus(isSuccess: boolean): void;
   showReferral(): void;
   clearCache(): void;
-  initialize(apiKey: string, environment: string, marketName: string): void;
 };
 
 type OfferListRes = {
@@ -26,8 +26,6 @@ export type OfferData = components['OfferData'] & {
 export type UserPayload = { [key: string]: string };
 
 const ServicexSdkNative = NativeModules.ServicexSdkRn as ServicexSdkRnType;
-
-export function init() {}
 
 export async function getOffers(payload: UserPayload): Promise<OfferListRes> {
   try {
@@ -72,14 +70,13 @@ export function initialize(
 }
 
 const ServiceXSdk = {
-  init,
+  initialize,
   getOffers,
   showOfferDetail,
   setUserProfile,
   setCredifyId,
   setPushClaimRequestStatus,
   showReferralResult,
-  initialize,
   clearCache,
 };
 
