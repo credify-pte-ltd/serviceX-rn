@@ -1,6 +1,17 @@
 PODS:
   - boost-for-react-native (1.63.0)
-  - CocoaAsyncSocket (7.6.5)
+  - CredifyCoreSDK (0.1.3):
+    - CredifyCryptoSwift
+    - KeychainAccess
+    - RealmSwift
+  - CredifyCryptoSwift (1.1.6)
+  - CredifyServiceX (0.2.17):
+    - CredifyCoreSDK
+    - CredifyCryptoSwift
+    - KeychainAccess
+    - Kingfisher
+    - lottie-ios
+    - RealmSwift
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.4)
   - FBReactNativeSpec (0.63.4):
@@ -10,74 +21,19 @@ PODS:
     - React-Core (= 0.63.4)
     - React-jsi (= 0.63.4)
     - ReactCommon/turbomodule/core (= 0.63.4)
-  - Flipper (0.92.0):
-    - Flipper-Folly (~> 2.6)
-    - Flipper-RSocket (~> 1.4)
-  - Flipper-Boost-iOSX (1.76.0.1.11)
-  - Flipper-DoubleConversion (1.1.7)
-  - Flipper-Fmt (7.1.7)
-  - Flipper-Folly (2.6.7):
-    - Flipper-Boost-iOSX
-    - Flipper-DoubleConversion
-    - Flipper-Fmt (= 7.1.7)
-    - Flipper-Glog
-    - libevent (~> 2.1.12)
-    - OpenSSL-Universal (= 1.1.180)
-  - Flipper-Glog (0.3.6)
-  - Flipper-PeerTalk (0.0.4)
-  - Flipper-RSocket (1.4.3):
-    - Flipper-Folly (~> 2.6)
-  - FlipperKit (0.92.0):
-    - FlipperKit/Core (= 0.92.0)
-  - FlipperKit/Core (0.92.0):
-    - Flipper (~> 0.92.0)
-    - FlipperKit/CppBridge
-    - FlipperKit/FBCxxFollyDynamicConvert
-    - FlipperKit/FBDefines
-    - FlipperKit/FKPortForwarding
-  - FlipperKit/CppBridge (0.92.0):
-    - Flipper (~> 0.92.0)
-  - FlipperKit/FBCxxFollyDynamicConvert (0.92.0):
-    - Flipper-Folly (~> 2.6)
-  - FlipperKit/FBDefines (0.92.0)
-  - FlipperKit/FKPortForwarding (0.92.0):
-    - CocoaAsyncSocket (~> 7.6)
-    - Flipper-PeerTalk (~> 0.0.4)
-  - FlipperKit/FlipperKitHighlightOverlay (0.92.0)
-  - FlipperKit/FlipperKitLayoutHelpers (0.92.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutTextSearchable
-  - FlipperKit/FlipperKitLayoutIOSDescriptors (0.92.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutHelpers
-    - YogaKit (~> 1.18)
-  - FlipperKit/FlipperKitLayoutPlugin (0.92.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutHelpers
-    - FlipperKit/FlipperKitLayoutIOSDescriptors
-    - FlipperKit/FlipperKitLayoutTextSearchable
-    - YogaKit (~> 1.18)
-  - FlipperKit/FlipperKitLayoutTextSearchable (0.92.0)
-  - FlipperKit/FlipperKitNetworkPlugin (0.92.0):
-    - FlipperKit/Core
-  - FlipperKit/FlipperKitReactPlugin (0.92.0):
-    - FlipperKit/Core
-  - FlipperKit/FlipperKitUserDefaultsPlugin (0.92.0):
-    - FlipperKit/Core
-  - FlipperKit/SKIOSNetworkPlugin (0.92.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitNetworkPlugin
   - Folly (2020.01.13.00):
     - boost-for-react-native
     - DoubleConversion
     - Folly/Default (= 2020.01.13.00)
     - glog
+  - Folly/Default (2020.01.13.00):
+    - boost-for-react-native
+    - DoubleConversion
+    - glog
   - glog (0.3.5)
-  - libevent (2.1.12)
-  - OpenSSL-Universal (1.1.180)
+  - KeychainAccess (4.2.2)
+  - Kingfisher (6.3.0)
+  - lottie-ios (3.2.3)
   - RCTRequired (0.63.4)
   - RCTTypeSafety (0.63.4):
     - FBLazyVector (= 0.63.4)
@@ -232,6 +188,11 @@ PODS:
     - Folly (= 2020.01.13.00)
     - glog
     - React-jsi/Default (= 0.63.4)
+  - React-jsi/Default (0.63.4):
+    - boost-for-react-native (= 1.63.0)
+    - DoubleConversion
+    - Folly (= 2020.01.13.00)
+    - glog
   - React-jsiexecutor (0.63.4):
     - DoubleConversion
     - Folly (= 2020.01.13.00)
@@ -299,35 +260,20 @@ PODS:
     - React-Core (= 0.63.4)
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
+  - Realm (10.11.0):
+    - Realm/Headers (= 10.11.0)
+  - Realm/Headers (10.11.0)
+  - RealmSwift (10.11.0):
+    - Realm (= 10.11.0)
   - servicex-sdk-rn (0.1.0):
+    - CredifyServiceX
     - React-Core
   - Yoga (1.14.0)
-  - YogaKit (1.18.1):
-    - Yoga (~> 1.14)
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
-  - Flipper (= 0.92.0)
-  - Flipper-DoubleConversion (= 1.1.7)
-  - Flipper-Folly (= 2.6.7)
-  - Flipper-Glog (= 0.3.6)
-  - Flipper-PeerTalk (~> 0.0.4)
-  - Flipper-RSocket (= 1.4.3)
-  - FlipperKit (= 0.92.0)
-  - FlipperKit/Core (= 0.92.0)
-  - FlipperKit/CppBridge (= 0.92.0)
-  - FlipperKit/FBCxxFollyDynamicConvert (= 0.92.0)
-  - FlipperKit/FBDefines (= 0.92.0)
-  - FlipperKit/FKPortForwarding (= 0.92.0)
-  - FlipperKit/FlipperKitHighlightOverlay (= 0.92.0)
-  - FlipperKit/FlipperKitLayoutPlugin (= 0.92.0)
-  - FlipperKit/FlipperKitLayoutTextSearchable (= 0.92.0)
-  - FlipperKit/FlipperKitNetworkPlugin (= 0.92.0)
-  - FlipperKit/FlipperKitReactPlugin (= 0.92.0)
-  - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.92.0)
-  - FlipperKit/SKIOSNetworkPlugin (= 0.92.0)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -358,19 +304,14 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - boost-for-react-native
-    - CocoaAsyncSocket
-    - Flipper
-    - Flipper-Boost-iOSX
-    - Flipper-DoubleConversion
-    - Flipper-Fmt
-    - Flipper-Folly
-    - Flipper-Glog
-    - Flipper-PeerTalk
-    - Flipper-RSocket
-    - FlipperKit
-    - libevent
-    - OpenSSL-Universal
-    - YogaKit
+    - CredifyCoreSDK
+    - CredifyCryptoSwift
+    - CredifyServiceX
+    - KeychainAccess
+    - Kingfisher
+    - lottie-ios
+    - Realm
+    - RealmSwift
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -430,23 +371,17 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
+  CredifyCoreSDK: c63a30fee6ce0cd77b259f2e3826fc2f6a403db5
+  CredifyCryptoSwift: 90f30a1c0c2eab8f76c90cbddfb4631f4dfe913a
+  CredifyServiceX: aee91ac04f350f229d091351468fb046e9c50ce8
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
-  Flipper: bc940dd278ca91f9b2d36b6fac5c098a8906ffa2
-  Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
-  Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
-  Flipper-Fmt: 60cbdd92fc254826e61d669a5d87ef7015396a9b
-  Flipper-Folly: 83af37379faa69497529e414bd43fbfc7cae259a
-  Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
-  Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
-  Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
-  FlipperKit: b2c08dc00bd104315cf3d0fe2f4939b0b20b407a
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
-  libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
+  KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
+  Kingfisher: 6c3df386db71d82c0817a429d2c9421a77396529
+  lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
   React: b0a957a2c44da4113b0c4c9853d8387f8e64e615
@@ -467,10 +402,11 @@ SPEC CHECKSUMS:
   React-RCTText: 5c51df3f08cb9dedc6e790161195d12bac06101c
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
-  servicex-sdk-rn: c7b1e35c682e423bc76f26f1067b260df971c17c
+  Realm: 39ff23f0f709cd4ed93eb47ee6593c2158945b38
+  RealmSwift: 42713e09a8631070d6c12c3c5fb22b8edc1daa41
+  servicex-sdk-rn: d6af8f4746c6bd68dbdd554a9667a51664f3cf64
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
-  YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: adf92fb64a61a67c59571b062d755f2780dd9aca
+PODFILE CHECKSUM: 2e87fb0cebfcb33e1dcb4b997be7d9ec69c49439
 
 COCOAPODS: 1.10.1
