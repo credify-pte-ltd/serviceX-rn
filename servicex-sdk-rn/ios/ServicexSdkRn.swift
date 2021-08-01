@@ -1,9 +1,13 @@
+import CredifyServiceXSDK
+
 @objc(ServicexSdkRn)
 class ServicexSdkRn: NSObject {
     
     @objc(initialize:environment:marketName:)
     func initialize(apiKey:NSDictionary, environment: String, marketName: String) -> Void {
-     
+        let config = CredifyServiceXConfiguration(apiKey: "4nN5UifKTRxR1At4syeBHM6e4p0cFOdoqsuUKOIgSYBEJRa8UpGprqorfyWFgdVk",
+                                                        environment: .SANDBOX, appName: "App Name")
+        CredifyServiceX.shared.config(with: config)
     }
     
     
@@ -17,7 +21,7 @@ class ServicexSdkRn: NSObject {
         
     }
     
-    @objc(showOfferDetail)
+    @objc(showOfferDetail:)
     func showOfferDetail(offerId: String) {
         
     }

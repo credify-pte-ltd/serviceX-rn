@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		F4FF95D7245B92E800C19C63 /* ServicexSdkRn.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /* ServicexSdkRn.swift */; };
-		FC8B85B1E0A9F4E614BA2BB7 /* Pods_ServicexSdkRn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23E4E3FF0EA42054098D3C22 /* Pods_ServicexSdkRn.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,11 +23,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		04F499E257C008D5F617DC05 /* Pods-ServicexSdkRn.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ServicexSdkRn.release.xcconfig"; path = "Target Support Files/Pods-ServicexSdkRn/Pods-ServicexSdkRn.release.xcconfig"; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libServicexSdkRn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libServicexSdkRn.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		23E4E3FF0EA42054098D3C22 /* Pods_ServicexSdkRn.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ServicexSdkRn.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3E7B5891CC2AC0600A0062D /* ServicexSdkRn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServicexSdkRn.m; sourceTree = "<group>"; };
-		C2396122AD97BC7EE5E00CF3 /* Pods-ServicexSdkRn.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ServicexSdkRn.debug.xcconfig"; path = "Target Support Files/Pods-ServicexSdkRn/Pods-ServicexSdkRn.debug.xcconfig"; sourceTree = "<group>"; };
 		F4FF95D5245B92E700C19C63 /* ServicexSdkRn-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ServicexSdkRn-Bridging-Header.h"; sourceTree = "<group>"; };
 		F4FF95D6245B92E800C19C63 /* ServicexSdkRn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicexSdkRn.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -38,7 +34,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FC8B85B1E0A9F4E614BA2BB7 /* Pods_ServicexSdkRn.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,23 +48,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		39F62C80BB210C98AF9032BC /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				23E4E3FF0EA42054098D3C22 /* Pods_ServicexSdkRn.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		43FC4C749C33A85BAF0B2FFE /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				C2396122AD97BC7EE5E00CF3 /* Pods-ServicexSdkRn.debug.xcconfig */,
-				04F499E257C008D5F617DC05 /* Pods-ServicexSdkRn.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
@@ -77,8 +55,6 @@
 				B3E7B5891CC2AC0600A0062D /* ServicexSdkRn.m */,
 				F4FF95D5245B92E700C19C63 /* ServicexSdkRn-Bridging-Header.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
-				43FC4C749C33A85BAF0B2FFE /* Pods */,
-				39F62C80BB210C98AF9032BC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -89,7 +65,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "ServicexSdkRn" */;
 			buildPhases = (
-				8FD4DBF67CF09DD8D5169E21 /* [CP] Check Pods Manifest.lock */,
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
 				58B511D91A9E6C8500147676 /* CopyFiles */,
@@ -134,31 +109,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		8FD4DBF67CF09DD8D5169E21 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ServicexSdkRn-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		58B511D71A9E6C8500147676 /* Sources */ = {
@@ -215,7 +165,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -258,7 +208,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -267,7 +217,6 @@
 		};
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C2396122AD97BC7EE5E00CF3 /* Pods-ServicexSdkRn.debug.xcconfig */;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -287,7 +236,6 @@
 		};
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 04F499E257C008D5F617DC05 /* Pods-ServicexSdkRn.release.xcconfig */;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
