@@ -11,8 +11,9 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  SafeAreaView,
 } from 'react-native';
-import ServiceXSdk, { OfferData, UserPayload } from 'servicex-sdk-rn';
+import ServiceXSdk, { OfferData } from 'servicex-sdk-rn';
 
 const API_KEY =
   '4nN5UifKTRxR1At4syeBHM6e4p0cFOdoqsuUKOIgSYBEJRa8UpGprqorfyWFgdVk';
@@ -39,13 +40,7 @@ export default function App() {
     ServiceXSdk.clearCache();
     showLoading(true);
     try {
-      const payload: UserPayload = {
-        phone_number: user.phoneNumber,
-        country_code: user.phoneCountryCode,
-        local_id: user.id,
-        credify_id: user.credifyId,
-      };
-      const res = await ServiceXSdk.getOffers(payload);
+      const res = await ServiceXSdk.getOffers();
       const credifyId = res.credifyId;
       const offers = res.offerList;
       setOffers(offers);
@@ -57,10 +52,6 @@ export default function App() {
     }
 
     showLoading(false);
-  }
-
-  async function showReferal() {
-    ServiceXSdk.showReferralResult();
   }
 
   async function getDemoUsers() {
@@ -80,11 +71,11 @@ export default function App() {
         phone_number: _user.phoneNumber,
         country_code: _user.phoneCountryCode,
         email: _user.email,
+        credify_id: _user.credifyId,
       };
       console.log({ userProfile });
       onChangeText(_user.id);
       ServiceXSdk.setUserProfile(userProfile);
-      ServiceXSdk.setCredifyId(_user.credifyId);
     } catch (error) {
       console.log(error);
     }
@@ -147,7 +138,7 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={{ marginTop: 10 }} />
       <Button onPress={getDemoUsers} title="Get Demo user" color="#841584" />
 
@@ -157,9 +148,6 @@ export default function App() {
         title="Get offer list"
         color="#841584"
       />
-
-      <View style={{ marginTop: 10 }} />
-      <Button onPress={showReferal} title="Show referal " color="#841584" />
       <Text>Current user ID (Empty the input to get random user)</Text>
       <TextInput
         style={{ borderWidth: 1, borderColor: 'grey' }}
@@ -172,7 +160,7 @@ export default function App() {
         keyExtractor={(item) => item.id!!}
       />
       <Spinner visible={isLoading} textContent={'Loading...'} />
-    </View>
+    </SafeAreaView>
   );
 }
 
