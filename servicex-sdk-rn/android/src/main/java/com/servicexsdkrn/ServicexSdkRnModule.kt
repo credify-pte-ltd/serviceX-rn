@@ -42,12 +42,12 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
   }
 
   @ReactMethod
-  fun getOfferList(userDict: ReadableMap, promise: Promise) {
+  fun getOfferList(promise: Promise) {
     val params = GetOfferListParam(
-      phoneNumber = userDict.getString("phone_number"),
-      countryCode = userDict.getString("country_code"),
-      localId = userDict.getInt("local_id")!!.toString(),
-      credifyId = userDict.getString("credify_id")
+      phoneNumber = mUserProfile?.phone?.phoneNumber,
+      countryCode = mUserProfile?.phone?.countryCode,
+      localId = mUserProfile?.id!!,
+      credifyId = mCredifyId
     )
 
     CredifySDK.instance.getOfferList(
@@ -94,6 +94,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
       dob = null,
       address = null
     )
+    mCredifyId = userDict.getString("credify_id")
   }
 
 
@@ -102,13 +103,11 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     mCredifyId = credifyId
   }
 
-  fun setPushClaimResultCB(resultCallback: CredifySDK.PushClaimResultCallback) {
-    mPushClaimResultCallback = resultCallback
-  }
-
   @ReactMethod
   fun setPushClaimRequestStatus(isSuccess: Boolean) {
     mPushClaimResultCallback?.onPushClaimResult(isSuccess == isSuccess)
+    // Dereference the callback to avoid memory leak
+    mPushClaimResultCallback = null
   }
 
   private fun getOffer(id: String): Offer? {
@@ -135,7 +134,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
           user: UserProfile,
           resultCallback: CredifySDK.PushClaimResultCallback
         ) {
-          setPushClaimResultCB(resultCallback)
+          mPushClaimResultCallback = resultCallback
           pushClaimCB.invoke(mUserProfile?.id, credifyId)
         }
       },

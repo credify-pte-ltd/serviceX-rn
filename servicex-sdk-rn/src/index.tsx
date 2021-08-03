@@ -5,12 +5,10 @@ type PushClaimCB = (localId: string, credifyId: string) => void;
 
 type ServicexSdkRnType = {
   initialize(apiKey: string, environment: string, marketName: string): void;
-  getOfferList(payload: UserPayload): Promise<string>;
+  getOfferList(): Promise<string>;
   showOfferDetail(id: string, pushClaimCB: PushClaimCB): void;
-  setCredifyId(id: string): void;
   setUserProfile(payload: UserPayload): void;
   setPushClaimRequestStatus(isSuccess: boolean): void;
-  showReferral(): void;
   clearCache(): void;
 };
 
@@ -27,9 +25,9 @@ export type UserPayload = { [key: string]: string };
 
 const ServicexSdkNative = NativeModules.ServicexSdkRn as ServicexSdkRnType;
 
-export async function getOffers(payload: UserPayload): Promise<OfferListRes> {
+export async function getOffers(): Promise<OfferListRes> {
   try {
-    const jsonString = await ServicexSdkNative.getOfferList(payload);
+    const jsonString = await ServicexSdkNative.getOfferList();
     const offerRes: OfferListRes = JSON.parse(jsonString);
     return offerRes;
   } catch (error) {
@@ -43,14 +41,6 @@ export function clearCache() {
 
 export function showOfferDetail(id: string, pushClaimCB: PushClaimCB) {
   ServicexSdkNative.showOfferDetail(id, pushClaimCB);
-}
-
-export function showReferralResult() {
-  ServicexSdkNative.showReferral();
-}
-
-export function setCredifyId(id: string) {
-  ServicexSdkNative.setCredifyId(id);
 }
 
 export function setUserProfile(payload: UserPayload) {
@@ -74,9 +64,7 @@ const ServiceXSdk = {
   getOffers,
   showOfferDetail,
   setUserProfile,
-  setCredifyId,
   setPushClaimRequestStatus,
-  showReferralResult,
   clearCache,
 };
 

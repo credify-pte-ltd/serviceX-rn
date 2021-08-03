@@ -51,6 +51,9 @@ static void InitializeFlipper(UIApplication *application) {
   return YES;
 }
 
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+}
+
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG

@@ -1,6 +1,6 @@
 # servicex-sdk-rn
 
-A serviceX sdk for react-native
+A serviceX sdk for react-native (Support RN 0.59.x and above)
 
 ## Installation
 
@@ -14,10 +14,22 @@ or
 npm install servicex-sdk-rn
 ```
 
-Then link the native module if your project does not support auto link (RN version < 0.6x.x)
+Then link the native module if your project does not support auto link (RN version < 0.60)
 
 ```sh
 react-native link
+```
+
+In your iOS pod file, add the pod command below to your target:
+
+```swift
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+      end
+    end
+  end
 ```
 
 ## Usage
@@ -36,14 +48,10 @@ ServiceXSdk.clearCache()
 //** You need to tell SDK what is current user profile
 ServiceXSdk.setUserProfile(userProfile)
 
-//** And it credifyId if have
-ServiceXSdk.setCredifyId(credifyId)
-
 //** Show offers list
 const res = await ServiceXSdk.getOffers(payload)
 
 //** Show offer detail
-ServiceXSdk.clearCache()
 ServiceXSdk.showOfferDetail(
   offerId,
   async (localId: string, credifyId: string) => {
@@ -57,10 +65,6 @@ ServiceXSdk.showOfferDetail(
     }
   }
 )
-
-//** If you want to show the referral result for the current user
-ServiceXSdk.clearCache()
-ServiceXSdk.showReferralResult()
 ```
 
 ## Contributing
