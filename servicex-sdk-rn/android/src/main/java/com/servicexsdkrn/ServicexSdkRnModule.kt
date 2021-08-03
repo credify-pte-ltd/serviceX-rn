@@ -106,6 +106,8 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
   @ReactMethod
   fun setPushClaimRequestStatus(isSuccess: Boolean) {
     mPushClaimResultCallback?.onPushClaimResult(isSuccess == isSuccess)
+    // Dereference the callback to avoid memory leak
+    mPushClaimResultCallback = null
   }
 
   private fun getOffer(id: String): Offer? {

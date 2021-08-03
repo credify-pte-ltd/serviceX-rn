@@ -43,10 +43,6 @@ export function showOfferDetail(id: string, pushClaimCB: PushClaimCB) {
   ServicexSdkNative.showOfferDetail(id, pushClaimCB);
 }
 
-export function showReferralResult() {
-  ServicexSdkNative.showReferral();
-}
-
 export function setUserProfile(payload: UserPayload) {
   ServicexSdkNative.setUserProfile(payload);
 }

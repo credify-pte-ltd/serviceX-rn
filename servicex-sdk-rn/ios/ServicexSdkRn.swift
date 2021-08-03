@@ -86,6 +86,8 @@ class ServicexSdkRn: NSObject {
     @objc(setPushClaimRequestStatus:)
     func setPushClaimRequestStatus(isSuccess: Bool){
         self.pushClaimResponseCallback?(isSuccess)
+        // Dereference callback to avoid memory leak
+        self.pushClaimResponseCallback = nil
     }
     
     @objc(showOfferDetail:pushClaimCB:)
@@ -103,7 +105,7 @@ class ServicexSdkRn: NSObject {
             
             OfferManager.shared.pushClaimTokensHandler = { (credifyId, result) in
                 // Demo Market call push claim token
-                pushClaimCB([credifyId, user?.id])
+                pushClaimCB([user?.id, credifyId])
                 self.pushClaimResponseCallback = result
             }
         }
