@@ -15,12 +15,21 @@ import {
 } from 'react-native';
 import ServiceXSdk, { OfferData } from 'servicex-sdk-rn';
 
+// const API_KEY =
+//   '7kx6vx9p9gZmqrtvHjRTOiSXMkAfZB3s5u3yjLehQHQCtjWrjAk9XlQHR2IOqpuR';
+// const ENV = 'DEV';
+// const PUSH_CLAIM_URL =
+//   'https://dev-demo-api.credify.ninja/housecare/push-claims';
+// const DEMO_USER_URL = 'https://dev-demo-api.credify.ninja/housecare/demo-user';
+// const MARKET_NAME = 'housecare';
+
 const API_KEY =
-  '4nN5UifKTRxR1At4syeBHM6e4p0cFOdoqsuUKOIgSYBEJRa8UpGprqorfyWFgdVk';
-const ENV = 'SANDBOX';
-const PUSH_CLAIM_URL = 'https://sandbox-demo-api.credify.dev/tiki/push-claims';
-const DEMO_USER_URL = 'https://sandbox-demo-api.credify.dev/tiki/demo-user';
-const MARKET_NAME = 'tiki';
+  '7kx6vx9p9gZmqrtvHjRTOiSXMkAfZB3s5u3yjLehQHQCtjWrjAk9XlQHR2IOqpuR';
+const ENV = 'SIT';
+const PUSH_CLAIM_URL =
+  'https://sit-demo-api.credify.ninja/housecare/push-claims';
+const DEMO_USER_URL = 'https://sit-demo-api.credify.ninja/housecare/demo-user';
+const MARKET_NAME = 'housecare';
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -64,7 +73,7 @@ export default function App() {
       setUser(_user);
       const userProfile = {
         id: _user.id,
-        first_name: _user.phoneNumber,
+        first_name: _user.firstName,
         last_name: _user.lastName,
         middle_name: _user.middleName,
         name: _user.name,
