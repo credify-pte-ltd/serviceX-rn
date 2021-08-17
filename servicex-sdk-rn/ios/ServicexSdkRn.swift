@@ -3,7 +3,7 @@ import CredifyServiceXSDK
 @objc(ServicexSdkRn)
 class ServicexSdkRn: NSObject {
     
-    var listOffer: [OfferData] = [OfferData]()
+    var listOffer: [CCOfferData] = [CCOfferData]()
     var pushClaimResponseCallback: ((Bool) -> Void)?
     var userInput: NSDictionary?
     
@@ -23,7 +23,7 @@ class ServicexSdkRn: NSObject {
         CredifyServiceX.shared.applicationDidBecomeActive(application)
     }
     
-    func parseUserProfile(value:NSDictionary) -> PlatformUserModel? {
+    func parseUserProfile(value:NSDictionary) -> CCPlatformUserModel? {
         guard let v = value as? [String:Any] else { return nil }
         if let id = v["id"] as? Int {
             let firstName = v["first_name"] as? String ?? ""
@@ -33,7 +33,7 @@ class ServicexSdkRn: NSObject {
             let phoneNumber = v["phone_number"] as? String
             let phoneCountryCode = v["country_code"] as? String
             
-            return PlatformUserModel(id: "\(id)",
+            return CCPlatformUserModel(id: "\(id)",
                                      firstName: firstName,
                                      lastName: lastName,
                                      email: email,
@@ -51,13 +51,16 @@ class ServicexSdkRn: NSObject {
     
     struct OfferListRes: Codable {
         let credifyId: String?
-        let offerList: [OfferData]
+        let offerList: [CCOfferData]
     }
     
     @objc(getOfferList:rejecter:)
     func getOfferList(_ resolve: @escaping(RCTPromiseResolveBlock), rejecter reject: @escaping(RCTPromiseRejectBlock)) -> Void {
         let user = self.parseUserProfile(value: userInput!)
-        OfferManager.shared.getOffersConsumer(user: user!) { [weak self] result in
+        ServiceXService.shared.offerService.getOffers(phoneNumber: user?.phoneNumber,
+                                                      countryCode: user?.countryCode,
+                                                      localId: user!.id,
+                                                      credifyId: user?.credifyId) { [weak self] result in
             switch result {
             case .success(let offers):
                 self?.listOffer = offers
@@ -80,7 +83,7 @@ class ServicexSdkRn: NSObject {
     
     @objc(clearCache)
     func clearCache(){
-        
+        ServiceXService.shared.sessionService.resetSession()
     }
     
     @objc(setPushClaimRequestStatus:)
@@ -97,16 +100,14 @@ class ServicexSdkRn: NSObject {
             item.id == offerId
         })
         DispatchQueue.main.async {
-            OfferManager.shared.startRedemptionFlow(from: UIApplication.shared.keyWindow!.rootViewController!, offer: offer!, inputUser: user!)
-            
-            OfferManager.shared.redemptionHandler = { result in
-                print(result)
-            }
-            
-            OfferManager.shared.pushClaimTokensHandler = { (credifyId, result) in
+            ServiceXService.shared.offerService.presentModally(from: UIApplication.shared.keyWindow!.rootViewController!, offer: offer!, userProfile: user!){ credifyId, result in
                 // Demo Market call push claim token
                 pushClaimCB([user?.id, credifyId])
                 self.pushClaimResponseCallback = result
+            }
+            
+            ServiceXService.shared.offerService.redemptionResult = { result in
+                print(result)
             }
         }
     }

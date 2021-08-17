@@ -78,17 +78,15 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
   fun setUserProfile(userDict: ReadableMap) {
     mUserProfile = UserProfile(
       id = userDict.getInt("id")!!.toString(),
-      name = Name(
+      name = UserName(
         firstName = userDict.getString("first_name")!!,
         lastName = userDict.getString("last_name")!!,
         middleName = userDict.getString("middle_name"),
-        name = userDict.getString("name"),
-        verified = true
+        fullName = userDict.getString("full_name"),
       ),
-      phone = Phone(
+      phone = UserPhoneNumber(
         phoneNumber = userDict.getString("phone_number")!!,
         countryCode = userDict.getString("country_code")!!,
-        verified = true
       ),
       email = userDict.getString("email")!!,
       dob = null,
