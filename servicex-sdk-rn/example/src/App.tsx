@@ -76,7 +76,7 @@ export default function App() {
         first_name: _user.firstName,
         last_name: _user.lastName,
         middle_name: _user.middleName,
-        name: _user.name,
+        full_name: _user.fullName,
         phone_number: _user.phoneNumber,
         country_code: _user.phoneCountryCode,
         email: _user.email,

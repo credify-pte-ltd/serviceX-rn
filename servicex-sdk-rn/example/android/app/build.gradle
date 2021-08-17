@@ -127,6 +127,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    packagingOptions {
+        pickFirst '**/*.so'
+    }
+
     defaultConfig {
         applicationId "com.example.servicexsdkrn"
         minSdkVersion rootProject.ext.minSdkVersion

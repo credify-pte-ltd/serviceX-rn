@@ -32,6 +32,20 @@ In your iOS pod file, add the pod command below to your target:
   end
 ```
 
+In android, if you have the issue "More than one file was found with OS independent path 'lib/x86/libc++\_shared.so'" please add this code below inside `build.gradle`: (Link issue: https://github.com/tanersener/react-native-ffmpeg/issues/54)
+
+```
+android{
+  ...
+
+  packagingOptions {
+        pickFirst '**/*.so'
+  }
+
+  ...
+}
+```
+
 ## Usage
 
 Please refer to the example project inside the SDK to see how it work with our demo server
