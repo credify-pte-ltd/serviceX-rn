@@ -13,7 +13,7 @@ import {
   TextInput,
   SafeAreaView,
 } from 'react-native';
-import ServiceXSdk, { OfferData } from 'servicex-sdk-rn';
+import ServiceXSdk, { OfferData } from 'servicex-rn';
 
 // const API_KEY =
 //   '7kx6vx9p9gZmqrtvHjRTOiSXMkAfZB3s5u3yjLehQHQCtjWrjAk9XlQHR2IOqpuR';

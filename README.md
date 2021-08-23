@@ -1,17 +1,17 @@
-# servicex-sdk-rn
+# servicex-rn
 
 A serviceX sdk for react-native (Support RN 0.59.x and above)
 
 ## Installation
 
 ```sh
-yarn add servicex-sdk-rn
+yarn add servicex-rn
 ```
 
 or
 
 ```sh
-npm install servicex-sdk-rn
+npm install servicex-rn
 ```
 
 Then link the native module if your project does not support auto link (RN version < 0.60)
@@ -51,7 +51,7 @@ android{
 Please refer to the example project inside the SDK to see how it work with our demo server
 
 ```js
-import ServiceXSdk from "servicex-sdk-rn"
+import ServiceXSdk from "servicex-rn"
 
 //** Initialize project
 ServiceXSdk.initialize(API_KEY, ENV, MARKET_NAME)

@@ -20,7 +20,7 @@ target 'ServicexSdkRnExample' do
   #   flipper_post_install(installer)
   # end
   
-  pod 'servicex-sdk-rn', :path => '../..'
+  pod 'servicex-rn', :path => '../..'
   
   post_install do |installer|
     installer.pods_project.targets.each do |target|
