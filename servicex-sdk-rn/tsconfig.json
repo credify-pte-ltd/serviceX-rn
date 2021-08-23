@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "servicex-sdk-rn": ["./src/index"]
+      "servicex-rn": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

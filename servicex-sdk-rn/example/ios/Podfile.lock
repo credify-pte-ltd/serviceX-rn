@@ -265,7 +265,7 @@ PODS:
   - Realm/Headers (10.12.0)
   - RealmSwift (10.12.0):
     - Realm (= 10.12.0)
-  - servicex-sdk-rn (0.1.0):
+  - servicex-rn (0.1.0):
     - CredifyServiceX (~> 0.2.23)
     - React-Core
   - Yoga (1.14.0)
@@ -298,7 +298,7 @@ DEPENDENCIES:
   - React-RCTText (from `../node_modules/react-native/Libraries/Text`)
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
-  - servicex-sdk-rn (from `../..`)
+  - servicex-rn (from `../..`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -364,7 +364,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
-  servicex-sdk-rn:
+  servicex-rn:
     :path: "../.."
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
@@ -404,9 +404,9 @@ SPEC CHECKSUMS:
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   Realm: 32488213acb44660539c619d620cec1bac046166
   RealmSwift: 0abdca6231d5ff8a4f84cef9c1121ef95a483faf
-  servicex-sdk-rn: e714fd550adb39a9a09156c7eb38fe419cf0f1d2
+  servicex-rn: e79a35c6db715c1e3dcbe536ba0d1968bc2b519e
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: 0d2bb60eba6837bf10482a88dfbc6b3377b80189
+PODFILE CHECKSUM: f4447b6283ab0a39e92bdde583206a4843573601
 
 COCOAPODS: 1.10.1

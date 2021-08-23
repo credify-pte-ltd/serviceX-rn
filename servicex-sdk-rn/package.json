@@ -1,5 +1,5 @@
 {
-  "name": "servicex-sdk-rn",
+  "name": "servicex-rn",
   "version": "0.1.0",
   "description": "A serviceX sdk for react-native",
   "main": "lib/commonjs/index",
@@ -13,7 +13,7 @@
     "android",
     "ios",
     "cpp",
-    "servicex-sdk-rn.podspec",
+    "servicex-rn.podspec",
     "!lib/typescript/example",
     "!android/build",
     "!ios/build",
@@ -37,7 +37,7 @@
     "android"
   ],
   "repository": "https://github.com/credify-pte-ltd/serviceX-rn",
-  "author": "Credify.One <danh.nguyen@credify.one> (https://developer.credify.one)",
+  "author": "Credify Pte. Ltd.<dev@credify.one> (https://developer.credify.one)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/credify-pte-ltd/serviceX-rn/issues"
