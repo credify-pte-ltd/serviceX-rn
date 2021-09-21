@@ -265,7 +265,7 @@ PODS:
   - Realm/Headers (10.12.0)
   - RealmSwift (10.12.0):
     - Realm (= 10.12.0)
-  - servicex-rn (0.1.0):
+  - servicex-rn (0.1.1):
     - CredifyServiceX (~> 0.2.23)
     - React-Core
   - Yoga (1.14.0)
@@ -404,7 +404,7 @@ SPEC CHECKSUMS:
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   Realm: 32488213acb44660539c619d620cec1bac046166
   RealmSwift: 0abdca6231d5ff8a4f84cef9c1121ef95a483faf
-  servicex-rn: e79a35c6db715c1e3dcbe536ba0d1968bc2b519e
+  servicex-rn: f33cd115b33e725474fcb17e219a1949978316bb
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
 PODFILE CHECKSUM: f4447b6283ab0a39e92bdde583206a4843573601
