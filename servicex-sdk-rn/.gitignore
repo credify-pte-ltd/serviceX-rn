@@ -36,6 +36,9 @@ Pods
 local.properties
 android.iml
 *.hprof
+.settings
+.classpath
+.project
 
 # Cocoapods
 #
