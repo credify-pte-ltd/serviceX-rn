@@ -30,9 +30,9 @@ jobs:
           git commit -am "Bump version in package.json" --no-verify
           git fetch
           git branch temp-branch
-          git checkout master
+          git checkout main
           git merge temp-branch
-          git push origin master
+          git push origin main
           git push
       - name: Build library
         run: yarn prepare
