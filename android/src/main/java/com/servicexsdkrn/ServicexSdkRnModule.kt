@@ -27,12 +27,13 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
   private var mMarketName: String? = null
 
   @ReactMethod
-  fun initialize(apiKey: String, environment: String, marketName: String) {
+  fun initialize(apiKey: String, environment: String, marketName: String, packageVersion: String) {
     mMarketName = marketName
     CredifySDK.Builder()
       .withApiKey(apiKey)
       .withContext(this.reactApplicationContext)
       .withEnvironment(Environment.valueOf(environment))
+      .withVersion("servicex/rn/android/$packageVersion")
       .build();
   }
 
@@ -47,10 +48,11 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
       phoneNumber = mUserProfile?.phone?.phoneNumber,
       countryCode = mUserProfile?.phone?.countryCode,
       localId = mUserProfile?.id!!,
-      credifyId = mCredifyId
+      credifyId = mCredifyId,
+      productTypes = listOf()
     )
 
-    CredifySDK.instance.getOfferList(
+    CredifySDK.instance.offerApi.getOfferList(
       params = params,
       callback = object : OfferListCallback {
         override fun onSuccess(model: OfferList) {
@@ -146,7 +148,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
 
   @ReactMethod
   fun showReferral() {
-    CredifySDK.instance.showReferralResult(
+    CredifySDK.instance.referralApi.showReferralResult(
       context = this.currentActivity!!,
       userProfile = mUserProfile!!,
       marketName = mMarketName,

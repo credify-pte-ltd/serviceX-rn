@@ -1,10 +1,16 @@
 import { NativeModules } from 'react-native';
 import type { components } from '@credify/api-docs';
+import packageJson from '../package.json';
 
 type PushClaimCB = (localId: string, credifyId: string) => void;
 
 type ServicexSdkRnType = {
-  initialize(apiKey: string, environment: string, marketName: string): void;
+  initialize(
+    apiKey: string,
+    environment: string,
+    marketName: string,
+    packageVersion: string
+  ): void;
   getOfferList(): Promise<string>;
   showOfferDetail(id: string, pushClaimCB: PushClaimCB): void;
   setUserProfile(payload: UserPayload): void;
@@ -56,7 +62,8 @@ export function initialize(
   environment: string,
   marketName: string
 ) {
-  ServicexSdkNative.initialize(apiKey, environment, marketName);
+  const packageVersion = packageJson.version;
+  ServicexSdkNative.initialize(apiKey, environment, marketName, packageVersion);
 }
 
 const ServiceXSdk = {
