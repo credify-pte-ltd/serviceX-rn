@@ -1,6 +1,7 @@
 import { NativeModules } from 'react-native';
 import type { components } from '@credify/api-docs';
 import packageJson from '../package.json';
+import { camelize } from './utils';
 
 type PushClaimCB = (localId: string, credifyId: string) => void;
 
@@ -36,7 +37,7 @@ export async function getOffers(
 ): Promise<OfferListRes> {
   try {
     const jsonString = await ServicexSdkNative.getOfferList(productTypes);
-    const offerRes: OfferListRes = JSON.parse(jsonString);
+    const offerRes: OfferListRes = camelize(JSON.parse(jsonString));
     return offerRes;
   } catch (error) {
     throw error;

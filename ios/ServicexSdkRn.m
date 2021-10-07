@@ -4,7 +4,7 @@
 
 RCT_EXTERN_METHOD(initialize:(NSString *)apiKey environment:(NSString *)environment marketName:(NSString *)marketName packageVersion:(NSString *)packageVersion)
 RCT_EXTERN_METHOD(setUserProfile:(NSDictionary *)userDict)
-RCT_EXTERN_METHOD(getOfferList:(RCTPromiseResolveBlock*)resolve rejecter:(RCTPromiseRejectBlock*)reject)
+RCT_EXTERN_METHOD(getOfferList:(NSArray *)productTypes resolve:(RCTPromiseResolveBlock*)resolve rejecter:(RCTPromiseRejectBlock*)reject)
 RCT_EXTERN_METHOD(clearCache)
 RCT_EXTERN_METHOD(showOfferDetail:(NSString *)offerId pushClaimCB:(RCTResponseSenderBlock)pushClaimCB)
 RCT_EXTERN_METHOD(setPushClaimRequestStatus:(BOOL)isSuccess)

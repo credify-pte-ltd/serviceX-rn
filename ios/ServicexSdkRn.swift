@@ -55,13 +55,18 @@ class ServicexSdkRn: NSObject {
         let offerList: [CCOfferData]
     }
     
-    @objc(getOfferList:rejecter:)
-    func getOfferList(_ resolve: @escaping(RCTPromiseResolveBlock), rejecter reject: @escaping(RCTPromiseRejectBlock)) -> Void {
+    @objc(getOfferList:resolve:rejecter:)
+    func getOfferList(productTypes: NSArray, resolve: @escaping(RCTPromiseResolveBlock), rejecter reject: @escaping(RCTPromiseRejectBlock)) -> Void {
         let user = self.parseUserProfile(value: userInput!)
+        guard let _productTypes = productTypes as? [String] else { reject("CredifySDK error","productTypes must be a string array", nil)
+            return
+        }
+        
+        print(_productTypes)
         ServiceXService.shared.offerService.getOffers(phoneNumber: user?.phoneNumber,
                                                       countryCode: user?.countryCode,
                                                       localId: user!.id,
-                                                      credifyId: user?.credifyId, productTypes: []) { [weak self] result in
+                                                      credifyId: user?.credifyId, productTypes:_productTypes) { [weak self] result in
             switch result {
             case .success(let offers):
                 self?.listOffer = offers

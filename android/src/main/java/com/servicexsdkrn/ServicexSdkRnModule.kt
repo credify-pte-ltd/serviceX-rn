@@ -45,7 +45,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     for (i : Int in 0 until size) {
       when (array.getType(i)) {
         ReadableType.String -> array.getString(i)?.let { arrayList.add(it) }
-        else -> throw java.lang.Exception("Item must be String")
+        else -> throw java.lang.Exception("Item in Product types must be a String type")
       }
     }
     return arrayList
