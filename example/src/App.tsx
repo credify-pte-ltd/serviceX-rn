@@ -63,6 +63,12 @@ export default function App() {
     showLoading(false);
   }
 
+  function showPassportHandler() {
+    ServiceXSdk.showPassport(() => {
+      console.log('passport is dismissed');
+    });
+  }
+
   async function getDemoUsers() {
     setOffers([]);
     showLoading(true);
@@ -157,6 +163,14 @@ export default function App() {
         title="Get offer list"
         color="#841584"
       />
+
+      <View style={{ marginTop: 10 }} />
+      <Button
+        onPress={showPassportHandler}
+        title="Show Passport"
+        color="#841584"
+      />
+
       <Text>Current user ID (Empty the input to get random user)</Text>
       <TextInput
         style={{ borderWidth: 1, borderColor: 'grey' }}

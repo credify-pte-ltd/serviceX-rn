@@ -5,6 +5,8 @@ import { camelize } from './utils';
 
 type PushClaimCB = (localId: string, credifyId: string) => void;
 
+type DismissCB = () => void;
+
 type ServicexSdkRnType = {
   initialize(
     apiKey: string,
@@ -17,6 +19,7 @@ type ServicexSdkRnType = {
   setUserProfile(payload: UserPayload): void;
   setPushClaimRequestStatus(isSuccess: boolean): void;
   clearCache(): void;
+  showPassport(dismissCB: DismissCB): void;
 };
 
 type OfferListRes = {
@@ -60,6 +63,10 @@ export function setPushClaimRequestStatus(isSuccess: boolean) {
   ServicexSdkNative.setPushClaimRequestStatus(isSuccess);
 }
 
+export function showPassport(dismissCB: DismissCB) {
+  ServicexSdkNative.showPassport(dismissCB);
+}
+
 export function initialize(
   apiKey: string,
   environment: string,
@@ -76,6 +83,7 @@ const ServiceXSdk = {
   setUserProfile,
   setPushClaimRequestStatus,
   clearCache,
+  showPassport,
 };
 
 export default ServiceXSdk;

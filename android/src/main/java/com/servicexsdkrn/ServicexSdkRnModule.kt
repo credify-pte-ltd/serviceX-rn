@@ -151,6 +151,19 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
   }
 
   @ReactMethod
+  fun showPassport(dismissCB: Callback) {
+    CredifySDK.instance.offerApi.showPassport(this.currentActivity!!, userProfile = mUserProfile!!, callback = object : CredifySDK.PassportPageCallback{
+      override fun onShow() {
+
+      }
+
+      override fun onClose() {
+        dismissCB.invoke()
+      }
+    })
+  }
+
+  @ReactMethod
   fun showReferral() {
     CredifySDK.instance.referralApi.showReferralResult(
       context = this.currentActivity!!,

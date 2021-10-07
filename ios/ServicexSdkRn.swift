@@ -123,4 +123,14 @@ class ServicexSdkRn: NSObject {
     //
     //    }
     
+    @objc(showPassport:)
+    func showPassport(dismissCB:@escaping(RCTResponseSenderBlock)){
+        let user = self.parseUserProfile(value: userInput!)
+        DispatchQueue.main.async {
+            ServiceXService.shared.offerService.showPassport(from: UIApplication.shared.keyWindow!.rootViewController!, userProfile: user!) {
+                dismissCB([])
+            }
+        }
+    }
+    
 }
