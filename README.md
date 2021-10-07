@@ -82,24 +82,24 @@ android{
 
 ## Usage
 
-Please refer to the example project inside the SDK to see how it work with our demo server
+Please refer to the example project inside the SDK to see how it work with our demo server. For detail of API usages, please check the API type spec.
 
 ```js
 import ServiceXSdk from 'servicex-rn';
 
-//** Initialize project
+//** Initialize SDK
 ServiceXSdk.initialize(API_KEY, ENV, MARKET_NAME);
 
-// Clear old user in the SDK
+//** Clear old user in the SDK
 ServiceXSdk.clearCache();
 
-//** You need to tell SDK what is current user profile
+//** You need to tell SDK what is current user profile. This must be set before calling getOffers or showOfferDetail or showPassport API
 ServiceXSdk.setUserProfile(userProfile);
 
-//** Show offers list
-const res = await ServiceXSdk.getOffers(payload);
+//** Gets a list of offers after filtering for a specific user.
+const res = await ServiceXSdk.getOffers();
 
-//** Show offer detail
+//** Begin redemption flow
 ServiceXSdk.showOfferDetail(
   offerId,
   async (localId: string, credifyId: string) => {
@@ -113,6 +113,12 @@ ServiceXSdk.showOfferDetail(
     }
   }
 );
+
+//** Show Credify passport page for user to login to see the offers's status
+ServiceXSdk.showPassport(() => {
+  //** This callback is for dismiss action (user closes the passport window)
+  console.log('passport is dismissed');
+});
 ```
 
 ## Contributing

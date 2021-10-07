@@ -35,6 +35,11 @@ export type UserPayload = { [key: string]: string };
 
 const ServicexSdkNative = NativeModules.ServicexSdkRn as ServicexSdkRnType;
 
+/**
+ * Gets a list of offers after filtering for a specific user.
+ * @param productTypes - Array of string: list of product_category and product_sub_category. Default is empty
+ * @returns offer list response object
+ */
 export async function getOffers(
   productTypes: string[] = []
 ): Promise<OfferListRes> {
@@ -47,26 +52,56 @@ export async function getOffers(
   }
 }
 
+/**
+ * Clear SDK cache. Need to be called before starting a new redemption
+ */
 export function clearCache() {
   ServicexSdkNative.clearCache();
 }
 
+/**
+ * Begin redemption flow
+ * @param id - The id of the offer
+ * @param pushClaimCB - The callback for organization to push their user's claim token
+ * @returns offer list response object
+ */
 export function showOfferDetail(id: string, pushClaimCB: PushClaimCB) {
   ServicexSdkNative.showOfferDetail(id, pushClaimCB);
 }
 
-export function setUserProfile(payload: UserPayload) {
-  ServicexSdkNative.setUserProfile(payload);
+/**
+ * Set user info that need in other APIs such as showOfferDetail, getOffers, showPassport...
+ * @param userProfile - user profile
+ * @returns offer list response object
+ */
+export function setUserProfile(userProfile: UserPayload) {
+  ServicexSdkNative.setUserProfile(userProfile);
 }
 
+/**
+ * Set push claim request's status.
+ * @param isSuccess - status of push claim token's request
+ * @returns offer list response object
+ */
 export function setPushClaimRequestStatus(isSuccess: boolean) {
   ServicexSdkNative.setPushClaimRequestStatus(isSuccess);
 }
 
+/**
+ * Show Credify passport page for user to login to see the offers's status
+ * @param dismissCB - callback for dismiss action ( user close the passport window )
+ * @returns offer list response object
+ */
 export function showPassport(dismissCB: DismissCB) {
   ServicexSdkNative.showPassport(dismissCB);
 }
 
+/**
+ * Instantiates the SDK
+ * @param apiKey - The org's apiKey
+ * @param environment - The development environment: "SANDBOX" or "PRODUCTION"
+ * @param marketName - The name of the organization
+ * */
 export function initialize(
   apiKey: string,
   environment: string,
