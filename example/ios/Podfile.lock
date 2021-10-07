@@ -1,17 +1,6 @@
 PODS:
   - boost-for-react-native (1.63.0)
-  - CredifyCoreSDK (0.1.10):
-    - CredifyCryptoSwift
-    - KeychainAccess
-    - RealmSwift
   - CredifyCryptoSwift (1.1.14)
-  - CredifyServiceX (0.2.23):
-    - CredifyCoreSDK
-    - CredifyCryptoSwift
-    - KeychainAccess
-    - Kingfisher
-    - lottie-ios
-    - RealmSwift
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.4)
   - FBReactNativeSpec (0.63.4):
@@ -265,9 +254,15 @@ PODS:
   - Realm/Headers (10.12.0)
   - RealmSwift (10.12.0):
     - Realm (= 10.12.0)
-  - servicex-rn (0.1.1):
-    - CredifyServiceX (~> 0.2.23)
+  - serviceX (0.3.0):
+    - CredifyCryptoSwift
+    - KeychainAccess
+    - Kingfisher
+    - lottie-ios
+    - RealmSwift
+  - servicex-rn (0.2.0):
     - React-Core
+    - serviceX
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -304,14 +299,13 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - boost-for-react-native
-    - CredifyCoreSDK
     - CredifyCryptoSwift
-    - CredifyServiceX
     - KeychainAccess
     - Kingfisher
     - lottie-ios
     - Realm
     - RealmSwift
+    - serviceX
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -371,9 +365,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  CredifyCoreSDK: b3b2fcc3abc5fd6a70372bfaaa2ff32351ca3e74
   CredifyCryptoSwift: 3f79ab1a27467d9cd7cacc07361efa2aeec03b06
-  CredifyServiceX: 15416b6ff3461e77b55112778f62bae900c719ef
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
@@ -404,9 +396,10 @@ SPEC CHECKSUMS:
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   Realm: 32488213acb44660539c619d620cec1bac046166
   RealmSwift: 0abdca6231d5ff8a4f84cef9c1121ef95a483faf
-  servicex-rn: f33cd115b33e725474fcb17e219a1949978316bb
+  serviceX: 813dc0ec9bb386afb3b94db144bc19bfefb5c82a
+  servicex-rn: e755a22defde651eff53951baab9e8ed9821132f
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: f4447b6283ab0a39e92bdde583206a4843573601
+PODFILE CHECKSUM: a5b218bbdb51a4d4184f314c8b11972b0d7cb4ec
 
 COCOAPODS: 1.10.1

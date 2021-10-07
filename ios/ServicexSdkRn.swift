@@ -1,4 +1,4 @@
-import CredifyServiceXSDK
+import serviceX
 
 @objc(ServicexSdkRn)
 class ServicexSdkRn: NSObject {
@@ -7,14 +7,15 @@ class ServicexSdkRn: NSObject {
     var pushClaimResponseCallback: ((Bool) -> Void)?
     var userInput: NSDictionary?
     
-    @objc(initialize:environment:marketName:)
-    func initialize(apiKey:String, environment: String, marketName: String) -> Void {
+    @objc(initialize:environment:marketName:packageVersion:)
+    func initialize(apiKey:String, environment: String, marketName: String, packageVersion: String) -> Void {
         let envDict = ["DEV":  EnvironmentType.DEV, "PRODUCTION":  EnvironmentType.PRODUCTION,"SANDBOX":  EnvironmentType.SANDBOX,"SIT":  EnvironmentType.SIT,"UAT":  EnvironmentType.UAT]
         
         let config = CredifyServiceXConfiguration(apiKey: apiKey,
                                                   environment: envDict[environment]!, appName: marketName)
         CredifyServiceX.shared.config(with: config)
         CredifyServiceX.shared.applicationDidBecomeActive(UIApplication.shared)
+        CredifyServiceX.shared.setVersion(version: "servicex/rn/android/\(packageVersion)")
     }
     
     // In case we need to trigger it manually in AppDelegate Callback
@@ -60,7 +61,7 @@ class ServicexSdkRn: NSObject {
         ServiceXService.shared.offerService.getOffers(phoneNumber: user?.phoneNumber,
                                                       countryCode: user?.countryCode,
                                                       localId: user!.id,
-                                                      credifyId: user?.credifyId) { [weak self] result in
+                                                      credifyId: user?.credifyId, productTypes: []) { [weak self] result in
             switch result {
             case .success(let offers):
                 self?.listOffer = offers

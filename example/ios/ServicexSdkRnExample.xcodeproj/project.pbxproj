@@ -221,8 +221,9 @@
 				"${BUILT_PRODUCTS_DIR}/glog/glog.framework",
 				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
 				"${BUILT_PRODUCTS_DIR}/servicex-rn/servicex_rn.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/CredifyCoreSDK/CredifyCoreSDK.framework/CredifyCoreSDK",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/CredifyServiceXSDK/CredifyServiceXSDK.framework/CredifyServiceXSDK",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/core/core.framework/core",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/serviceX/serviceX.framework/serviceX",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FinalSDK/FinalSDK.framework/FinalSDK",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -254,8 +255,9 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/servicex_rn.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CredifyCoreSDK.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CredifyServiceXSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/core.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/serviceX.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FinalSDK.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

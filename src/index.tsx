@@ -11,7 +11,7 @@ type ServicexSdkRnType = {
     marketName: string,
     packageVersion: string
   ): void;
-  getOfferList(): Promise<string>;
+  getOfferList(productTypes: string[]): Promise<string>;
   showOfferDetail(id: string, pushClaimCB: PushClaimCB): void;
   setUserProfile(payload: UserPayload): void;
   setPushClaimRequestStatus(isSuccess: boolean): void;
@@ -31,9 +31,11 @@ export type UserPayload = { [key: string]: string };
 
 const ServicexSdkNative = NativeModules.ServicexSdkRn as ServicexSdkRnType;
 
-export async function getOffers(): Promise<OfferListRes> {
+export async function getOffers(
+  productTypes: string[] = []
+): Promise<OfferListRes> {
   try {
-    const jsonString = await ServicexSdkNative.getOfferList();
+    const jsonString = await ServicexSdkNative.getOfferList(productTypes);
     const offerRes: OfferListRes = JSON.parse(jsonString);
     return offerRes;
   } catch (error) {

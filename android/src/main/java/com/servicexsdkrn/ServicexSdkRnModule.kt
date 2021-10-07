@@ -1,18 +1,15 @@
 package com.servicexsdkrn
 
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
 import one.credify.sdk.CredifySDK
 import one.credify.sdk.core.request.GetOfferListParam
 import one.credify.sdk.core.callback.OfferListCallback
 import one.credify.sdk.core.model.*
 import android.util.Log
+import com.facebook.react.bridge.*
 import one.credify.sdk.core.CredifyError
 import com.google.gson.Gson
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.Callback;
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -42,14 +39,27 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     CredifySDK.instance.clearCache()
   }
 
+  fun toArrayList(array: ReadableArray): ArrayList<String>  {
+    val size = array.size()
+    val arrayList = ArrayList<String>(size)
+    for (i : Int in 0 until size) {
+      when (array.getType(i)) {
+        ReadableType.String -> array.getString(i)?.let { arrayList.add(it) }
+        else -> throw java.lang.Exception("Item must be String")
+      }
+    }
+    return arrayList
+  }
+
+
   @ReactMethod
-  fun getOfferList(promise: Promise) {
+  fun getOfferList(productTypes: ReadableArray, promise: Promise) {
     val params = GetOfferListParam(
       phoneNumber = mUserProfile?.phone?.phoneNumber,
       countryCode = mUserProfile?.phone?.countryCode,
       localId = mUserProfile?.id!!,
       credifyId = mCredifyId,
-      productTypes = listOf()
+      productTypes = toArrayList(productTypes)
     )
 
     CredifySDK.instance.offerApi.getOfferList(
@@ -97,12 +107,6 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     mCredifyId = userDict.getString("credify_id")
   }
 
-
-  @ReactMethod
-  fun setCredifyId(credifyId: String) {
-    mCredifyId = credifyId
-  }
-
   @ReactMethod
   fun setPushClaimRequestStatus(isSuccess: Boolean) {
     mPushClaimResultCallback?.onPushClaimResult(isSuccess == isSuccess)
@@ -122,7 +126,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     Log.d("CredifySDK", "mCredifyId = " + mCredifyId)
     Log.d("CredifySDK", "mUserProfile ID = " + mUserProfile?.id?.toString())
 
-    CredifySDK.instance.showOffer(
+    CredifySDK.instance.offerApi.showOffer(
       context = this.currentActivity!!,
       offer = _offer!!,
       userProfile = mUserProfile!!,
