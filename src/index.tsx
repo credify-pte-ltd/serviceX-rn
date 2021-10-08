@@ -63,7 +63,6 @@ export function clearCache() {
  * Begin redemption flow
  * @param id - The id of the offer
  * @param pushClaimCB - The callback for organization to push their user's claim token
- * @returns offer list response object
  */
 export function showOfferDetail(id: string, pushClaimCB: PushClaimCB) {
   ServicexSdkNative.showOfferDetail(id, pushClaimCB);
@@ -72,7 +71,6 @@ export function showOfferDetail(id: string, pushClaimCB: PushClaimCB) {
 /**
  * Set user info that need in other APIs such as showOfferDetail, getOffers, showPassport...
  * @param userProfile - user profile
- * @returns offer list response object
  */
 export function setUserProfile(userProfile: UserPayload) {
   ServicexSdkNative.setUserProfile(userProfile);
@@ -81,7 +79,6 @@ export function setUserProfile(userProfile: UserPayload) {
 /**
  * Set push claim request's status.
  * @param isSuccess - status of push claim token's request
- * @returns offer list response object
  */
 export function setPushClaimRequestStatus(isSuccess: boolean) {
   ServicexSdkNative.setPushClaimRequestStatus(isSuccess);
@@ -90,7 +87,6 @@ export function setPushClaimRequestStatus(isSuccess: boolean) {
 /**
  * Show Credify passport page for user to login to see the offers's status
  * @param dismissCB - callback for dismiss action ( user close the passport window )
- * @returns offer list response object
  */
 export function showPassport(dismissCB: DismissCB) {
   ServicexSdkNative.showPassport(dismissCB);
