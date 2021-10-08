@@ -107,7 +107,7 @@ export function initialize(
   ServicexSdkNative.initialize(apiKey, environment, marketName, packageVersion);
 }
 
-const ServiceXSdk = {
+const serviceX = {
   initialize,
   getOffers,
   showOfferDetail,
@@ -117,4 +117,4 @@ const ServiceXSdk = {
   showPassport,
 };
 
-export default ServiceXSdk;
+export default serviceX;
