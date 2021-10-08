@@ -221,8 +221,9 @@
 				"${BUILT_PRODUCTS_DIR}/glog/glog.framework",
 				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
 				"${BUILT_PRODUCTS_DIR}/servicex-rn/servicex_rn.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/CredifyCoreSDK/CredifyCoreSDK.framework/CredifyCoreSDK",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/CredifyServiceXSDK/CredifyServiceXSDK.framework/CredifyServiceXSDK",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/core/core.framework/core",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/serviceX/serviceX.framework/serviceX",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FinalSDK/FinalSDK.framework/FinalSDK",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -254,8 +255,9 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/servicex_rn.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CredifyCoreSDK.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CredifyServiceXSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/core.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/serviceX.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FinalSDK.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -326,11 +328,12 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 34C29C245L;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ServicexSdkRnExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -353,11 +356,12 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 34C29C245L;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ServicexSdkRnExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

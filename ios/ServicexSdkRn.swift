@@ -1,4 +1,4 @@
-import CredifyServiceXSDK
+import serviceX
 
 @objc(ServicexSdkRn)
 class ServicexSdkRn: NSObject {
@@ -7,14 +7,15 @@ class ServicexSdkRn: NSObject {
     var pushClaimResponseCallback: ((Bool) -> Void)?
     var userInput: NSDictionary?
     
-    @objc(initialize:environment:marketName:)
-    func initialize(apiKey:String, environment: String, marketName: String) -> Void {
+    @objc(initialize:environment:marketName:packageVersion:)
+    func initialize(apiKey:String, environment: String, marketName: String, packageVersion: String) -> Void {
         let envDict = ["DEV":  EnvironmentType.DEV, "PRODUCTION":  EnvironmentType.PRODUCTION,"SANDBOX":  EnvironmentType.SANDBOX,"SIT":  EnvironmentType.SIT,"UAT":  EnvironmentType.UAT]
         
         let config = CredifyServiceXConfiguration(apiKey: apiKey,
                                                   environment: envDict[environment]!, appName: marketName)
         CredifyServiceX.shared.config(with: config)
         CredifyServiceX.shared.applicationDidBecomeActive(UIApplication.shared)
+        CredifyServiceX.shared.setVersion(version: "servicex/rn/android/\(packageVersion)")
     }
     
     // In case we need to trigger it manually in AppDelegate Callback
@@ -54,13 +55,18 @@ class ServicexSdkRn: NSObject {
         let offerList: [CCOfferData]
     }
     
-    @objc(getOfferList:rejecter:)
-    func getOfferList(_ resolve: @escaping(RCTPromiseResolveBlock), rejecter reject: @escaping(RCTPromiseRejectBlock)) -> Void {
+    @objc(getOfferList:resolve:rejecter:)
+    func getOfferList(productTypes: NSArray, resolve: @escaping(RCTPromiseResolveBlock), rejecter reject: @escaping(RCTPromiseRejectBlock)) -> Void {
         let user = self.parseUserProfile(value: userInput!)
+        guard let _productTypes = productTypes as? [String] else { reject("CredifySDK error","productTypes must be a string array", nil)
+            return
+        }
+        
+        print(_productTypes)
         ServiceXService.shared.offerService.getOffers(phoneNumber: user?.phoneNumber,
                                                       countryCode: user?.countryCode,
                                                       localId: user!.id,
-                                                      credifyId: user?.credifyId) { [weak self] result in
+                                                      credifyId: user?.credifyId, productTypes:_productTypes) { [weak self] result in
             switch result {
             case .success(let offers):
                 self?.listOffer = offers
@@ -116,5 +122,15 @@ class ServicexSdkRn: NSObject {
     //    func showReferral(){
     //
     //    }
+    
+    @objc(showPassport:)
+    func showPassport(dismissCB:@escaping(RCTResponseSenderBlock)){
+        let user = self.parseUserProfile(value: userInput!)
+        DispatchQueue.main.async {
+            ServiceXService.shared.offerService.showPassport(from: UIApplication.shared.keyWindow!.rootViewController!, userProfile: user!) {
+                dismissCB([])
+            }
+        }
+    }
     
 }

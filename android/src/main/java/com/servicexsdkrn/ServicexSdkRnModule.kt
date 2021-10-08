@@ -1,18 +1,15 @@
 package com.servicexsdkrn
 
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
 import one.credify.sdk.CredifySDK
 import one.credify.sdk.core.request.GetOfferListParam
 import one.credify.sdk.core.callback.OfferListCallback
 import one.credify.sdk.core.model.*
 import android.util.Log
+import com.facebook.react.bridge.*
 import one.credify.sdk.core.CredifyError
 import com.google.gson.Gson
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.Callback;
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -27,12 +24,13 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
   private var mMarketName: String? = null
 
   @ReactMethod
-  fun initialize(apiKey: String, environment: String, marketName: String) {
+  fun initialize(apiKey: String, environment: String, marketName: String, packageVersion: String) {
     mMarketName = marketName
     CredifySDK.Builder()
       .withApiKey(apiKey)
       .withContext(this.reactApplicationContext)
       .withEnvironment(Environment.valueOf(environment))
+      .withVersion("servicex/rn/android/$packageVersion")
       .build();
   }
 
@@ -41,16 +39,30 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     CredifySDK.instance.clearCache()
   }
 
+  fun toArrayList(array: ReadableArray): ArrayList<String>  {
+    val size = array.size()
+    val arrayList = ArrayList<String>(size)
+    for (i : Int in 0 until size) {
+      when (array.getType(i)) {
+        ReadableType.String -> array.getString(i)?.let { arrayList.add(it) }
+        else -> throw java.lang.Exception("Item in Product types must be a String type")
+      }
+    }
+    return arrayList
+  }
+
+
   @ReactMethod
-  fun getOfferList(promise: Promise) {
+  fun getOfferList(productTypes: ReadableArray, promise: Promise) {
     val params = GetOfferListParam(
       phoneNumber = mUserProfile?.phone?.phoneNumber,
       countryCode = mUserProfile?.phone?.countryCode,
       localId = mUserProfile?.id!!,
-      credifyId = mCredifyId
+      credifyId = mCredifyId,
+      productTypes = toArrayList(productTypes)
     )
 
-    CredifySDK.instance.getOfferList(
+    CredifySDK.instance.offerApi.getOfferList(
       params = params,
       callback = object : OfferListCallback {
         override fun onSuccess(model: OfferList) {
@@ -95,12 +107,6 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     mCredifyId = userDict.getString("credify_id")
   }
 
-
-  @ReactMethod
-  fun setCredifyId(credifyId: String) {
-    mCredifyId = credifyId
-  }
-
   @ReactMethod
   fun setPushClaimRequestStatus(isSuccess: Boolean) {
     mPushClaimResultCallback?.onPushClaimResult(isSuccess == isSuccess)
@@ -120,7 +126,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     Log.d("CredifySDK", "mCredifyId = " + mCredifyId)
     Log.d("CredifySDK", "mUserProfile ID = " + mUserProfile?.id?.toString())
 
-    CredifySDK.instance.showOffer(
+    CredifySDK.instance.offerApi.showOffer(
       context = this.currentActivity!!,
       offer = _offer!!,
       userProfile = mUserProfile!!,
@@ -145,8 +151,21 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
   }
 
   @ReactMethod
+  fun showPassport(dismissCB: Callback) {
+    CredifySDK.instance.offerApi.showPassport(this.currentActivity!!, userProfile = mUserProfile!!, callback = object : CredifySDK.PassportPageCallback{
+      override fun onShow() {
+
+      }
+
+      override fun onClose() {
+        dismissCB.invoke()
+      }
+    })
+  }
+
+  @ReactMethod
   fun showReferral() {
-    CredifySDK.instance.showReferralResult(
+    CredifySDK.instance.referralApi.showReferralResult(
       context = this.currentActivity!!,
       userProfile = mUserProfile!!,
       marketName = mMarketName,

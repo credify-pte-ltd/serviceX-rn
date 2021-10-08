@@ -13,7 +13,7 @@ import {
   TextInput,
   SafeAreaView,
 } from 'react-native';
-import ServiceXSdk, { OfferData } from 'servicex-rn';
+import serviceX, { OfferData } from 'servicex-rn';
 
 // const API_KEY =
 //   '7kx6vx9p9gZmqrtvHjRTOiSXMkAfZB3s5u3yjLehQHQCtjWrjAk9XlQHR2IOqpuR';
@@ -38,7 +38,7 @@ export default function App() {
   const [isLoading, showLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    ServiceXSdk.initialize(API_KEY, ENV, MARKET_NAME);
+    serviceX.initialize(API_KEY, ENV, MARKET_NAME);
     getDemoUsers();
   }, []);
 
@@ -46,10 +46,10 @@ export default function App() {
     if (!user) {
       return;
     }
-    ServiceXSdk.clearCache();
+    serviceX.clearCache();
     showLoading(true);
     try {
-      const res = await ServiceXSdk.getOffers();
+      const res = await serviceX.getOffers();
       const credifyId = res.credifyId;
       const offers = res.offerList;
       setOffers(offers);
@@ -61,6 +61,12 @@ export default function App() {
     }
 
     showLoading(false);
+  }
+
+  function showPassportHandler() {
+    serviceX.showPassport(() => {
+      console.log('passport is dismissed');
+    });
   }
 
   async function getDemoUsers() {
@@ -84,7 +90,7 @@ export default function App() {
       };
       console.log({ userProfile });
       onChangeText(_user.id);
-      ServiceXSdk.setUserProfile(userProfile);
+      serviceX.setUserProfile(userProfile);
     } catch (error) {
       console.log(error);
     }
@@ -92,15 +98,15 @@ export default function App() {
   }
 
   function showOfferDetail(offerId: string) {
-    ServiceXSdk.showOfferDetail(
+    serviceX.showOfferDetail(
       offerId,
       async (localId: string, credifyId: string) => {
         try {
           const res = await pushClaim(localId, credifyId);
           console.log({ res });
-          ServiceXSdk.setPushClaimRequestStatus(true);
+          serviceX.setPushClaimRequestStatus(true);
         } catch (error) {
-          ServiceXSdk.setPushClaimRequestStatus(false);
+          serviceX.setPushClaimRequestStatus(false);
         }
       }
     );
@@ -157,6 +163,14 @@ export default function App() {
         title="Get offer list"
         color="#841584"
       />
+
+      <View style={{ marginTop: 10 }} />
+      <Button
+        onPress={showPassportHandler}
+        title="Show Passport"
+        color="#841584"
+      />
+
       <Text>Current user ID (Empty the input to get random user)</Text>
       <TextInput
         style={{ borderWidth: 1, borderColor: 'grey' }}
