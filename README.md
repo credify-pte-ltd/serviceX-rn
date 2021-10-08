@@ -39,7 +39,7 @@ Then we need to cd to the iOS folder then do `pod install` to update all the pod
 If you see the issue
 
 ```
-Specs satisfying the `servicex-rn (from `../node_modules/servicex-rn`)` dependency were found, but they required a higher minimum deployment target.
+Specs satisfying the `servicex-rn` dependency were found, but they required a higher minimum deployment target.
 ```
 
 Then please increase the supported deplolyment target to at least version 12.1: `platform :ios, '12.1'` in your pod file.
@@ -51,6 +51,14 @@ The Swift pod `RealmSwift` depends upon `Realm`, which does not define modules. 
 ```
 
 So please use `use_frameworks!` for your target ( if your project uses `Flipper` then we need to disable it )
+
+if you see the issue:
+
+```
+... FinalSDK does not contain bitcode. You must rebuild it with bitcode enabled (Xcode setting ENABLE_BITCODE)...
+```
+
+Then please disable bitcode from your pods. The fast way to do it is go to your Pods project in XCode and set Enable Bitcode to Yes first then set it to No to disable bitcode complie for all pods.
 
 ### Android
 
