@@ -93,37 +93,37 @@ android{
 Please refer to the example project inside the SDK to see how it work with our demo server. For detail of API usages, please check the API type spec.
 
 ```js
-import ServiceXSdk from 'servicex-rn';
+import serviceX from 'servicex-rn';
 
 //** Initialize SDK
-ServiceXSdk.initialize(API_KEY, ENV, MARKET_NAME);
+serviceX.initialize(API_KEY, ENV, MARKET_NAME);
 
 //** Clear old user in the SDK
-ServiceXSdk.clearCache();
+serviceX.clearCache();
 
 //** You need to tell SDK what is current user profile. This must be set before calling getOffers or showOfferDetail or showPassport API
-ServiceXSdk.setUserProfile(userProfile);
+serviceX.setUserProfile(userProfile);
 
 //** Gets a list of offers after filtering for a specific user.
-const res = await ServiceXSdk.getOffers();
+const res = await serviceX.getOffers();
 
 //** Begin redemption flow
-ServiceXSdk.showOfferDetail(
+serviceX.showOfferDetail(
   offerId,
   async (localId: string, credifyId: string) => {
     //** You need to add your push claim request in this callback and tell the SDK for the result
     try {
       const res = await pushClaim(localId, credifyId);
       console.log({ res });
-      ServiceXSdk.setPushClaimRequestStatus(true);
+      serviceX.setPushClaimRequestStatus(true);
     } catch (error) {
-      ServiceXSdk.setPushClaimRequestStatus(false);
+      serviceX.setPushClaimRequestStatus(false);
     }
   }
 );
 
 //** Show Credify passport page for user to login to see the offers's status
-ServiceXSdk.showPassport(() => {
+serviceX.showPassport(() => {
   //** This callback is for dismiss action (user closes the passport window)
   console.log('passport is dismissed');
 });
