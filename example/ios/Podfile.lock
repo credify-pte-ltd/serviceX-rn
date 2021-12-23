@@ -1,6 +1,6 @@
 PODS:
   - boost-for-react-native (1.63.0)
-  - CredifyCryptoSwift (1.1.14)
+  - CredifyCryptoSwift (1.1.16)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.4)
   - FBReactNativeSpec (0.63.4):
@@ -21,8 +21,8 @@ PODS:
     - glog
   - glog (0.3.5)
   - KeychainAccess (4.2.2)
-  - Kingfisher (6.3.1)
-  - lottie-ios (3.2.3)
+  - Kingfisher (7.1.2)
+  - lottie-ios (3.3.0)
   - RCTRequired (0.63.4)
   - RCTTypeSafety (0.63.4):
     - FBLazyVector (= 0.63.4)
@@ -249,20 +249,20 @@ PODS:
     - React-Core (= 0.63.4)
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
-  - Realm (10.12.0):
-    - Realm/Headers (= 10.12.0)
-  - Realm/Headers (10.12.0)
-  - RealmSwift (10.12.0):
-    - Realm (= 10.12.0)
-  - serviceX (0.3.0):
+  - Realm (10.20.1):
+    - Realm/Headers (= 10.20.1)
+  - Realm/Headers (10.20.1)
+  - RealmSwift (10.20.1):
+    - Realm (= 10.20.1)
+  - serviceX (0.7.0):
     - CredifyCryptoSwift
     - KeychainAccess
     - Kingfisher
     - lottie-ios
     - RealmSwift
-  - servicex-rn (0.2.0):
+  - servicex-rn (0.3.1):
     - React-Core
-    - serviceX
+    - serviceX (~> 0.7.0)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -365,15 +365,15 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  CredifyCryptoSwift: 3f79ab1a27467d9cd7cacc07361efa2aeec03b06
+  CredifyCryptoSwift: 8c1d7e9c477bcadd2f457883b32d2c80a187c238
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
-  Kingfisher: 016c8b653a35add51dd34a3aba36b580041acc74
-  lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
+  Kingfisher: 44ed6a8504763f27bab46163adfac83f5deb240c
+  lottie-ios: 6ac74dcc09904798f59b18cb3075c089d76be9ae
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
   React: b0a957a2c44da4113b0c4c9853d8387f8e64e615
@@ -394,12 +394,12 @@ SPEC CHECKSUMS:
   React-RCTText: 5c51df3f08cb9dedc6e790161195d12bac06101c
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
-  Realm: 32488213acb44660539c619d620cec1bac046166
-  RealmSwift: 0abdca6231d5ff8a4f84cef9c1121ef95a483faf
-  serviceX: 813dc0ec9bb386afb3b94db144bc19bfefb5c82a
-  servicex-rn: e755a22defde651eff53951baab9e8ed9821132f
+  Realm: fac5ecd031fcb81171627b74944c885662d4b266
+  RealmSwift: 9b02d25acb46a14756bde9893abb99e2e3675923
+  serviceX: 4550aa3018d35abb30a168776359c1bc9ec95fe3
+  servicex-rn: 07e359ad97d1b74fba2ad8d5bd043fc809680ba8
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
 PODFILE CHECKSUM: a5b218bbdb51a4d4184f314c8b11972b0d7cb4ec
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.10.2

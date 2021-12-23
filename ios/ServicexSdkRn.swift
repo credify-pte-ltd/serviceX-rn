@@ -9,19 +9,18 @@ class ServicexSdkRn: NSObject {
     
     @objc(initialize:environment:marketName:packageVersion:)
     func initialize(apiKey:String, environment: String, marketName: String, packageVersion: String) -> Void {
-        let envDict = ["DEV":  EnvironmentType.DEV, "PRODUCTION":  EnvironmentType.PRODUCTION,"SANDBOX":  EnvironmentType.SANDBOX,"SIT":  EnvironmentType.SIT,"UAT":  EnvironmentType.UAT]
+        let envDict = ["DEV": CCEnvironmentType.DEV, "PRODUCTION": .PRODUCTION,"SANDBOX":  .SANDBOX,"SIT": .SIT,"UAT": .UAT]
         
-        let config = CredifyServiceXConfiguration(apiKey: apiKey,
-                                                  environment: envDict[environment]!, appName: marketName)
-        CredifyServiceX.shared.config(with: config)
-        CredifyServiceX.shared.applicationDidBecomeActive(UIApplication.shared)
-        CredifyServiceX.shared.setVersion(version: "servicex/rn/android/\(packageVersion)")
+        let config = serviceXConfig(apiKey: apiKey, env: envDict[environment]!, appName: marketName)
+        CredifyServiceX.configure(config)
+        CredifyServiceX.updateUserAgent("servicex/rn/ios/\(packageVersion)")
+        CredifyServiceX.applicationDidBecomeActive(UIApplication.shared)
     }
     
-    // In case we need to trigger it manually in AppDelegate Callback
+      // In case we need to trigger it manually in AppDelegate Callback
     @objc(appDidBecomeActive:)
     func appDidBecomeActive(application: UIApplication) -> Void {
-        CredifyServiceX.shared.applicationDidBecomeActive(application)
+        CredifyServiceX.applicationDidBecomeActive(application)
     }
     
     func parseUserProfile(value:NSDictionary) -> CCPlatformUserModel? {
@@ -63,7 +62,7 @@ class ServicexSdkRn: NSObject {
         }
         
         print(_productTypes)
-        ServiceXService.shared.offerService.getOffers(phoneNumber: user?.phoneNumber,
+        CredifyServiceX.offer.getOffers(phoneNumber: user?.phoneNumber,
                                                       countryCode: user?.countryCode,
                                                       localId: user!.id,
                                                       credifyId: user?.credifyId, productTypes:_productTypes) { [weak self] result in
@@ -89,7 +88,7 @@ class ServicexSdkRn: NSObject {
     
     @objc(clearCache)
     func clearCache(){
-        ServiceXService.shared.sessionService.resetSession()
+        CredifyServiceX.session.resetSession()
     }
     
     @objc(setPushClaimRequestStatus:)
@@ -106,28 +105,22 @@ class ServicexSdkRn: NSObject {
             item.id == offerId
         })
         DispatchQueue.main.async {
-            ServiceXService.shared.offerService.presentModally(from: UIApplication.shared.keyWindow!.rootViewController!, offer: offer!, userProfile: user!){ credifyId, result in
+            CredifyServiceX.offer.presentModally(from: UIApplication.shared.keyWindow!.rootViewController!, offer: offer!, userProfile: user!){ credifyId, result in
                 // Demo Market call push claim token
                 pushClaimCB([user?.id, credifyId])
                 self.pushClaimResponseCallback = result
-            }
-            
-            ServiceXService.shared.offerService.redemptionResult = { result in
+            } completionHandler: { result in
+                print("**** Result is ****")
                 print(result)
             }
         }
     }
     
-    //    @objc(showReferral)
-    //    func showReferral(){
-    //
-    //    }
-    
     @objc(showPassport:)
     func showPassport(dismissCB:@escaping(RCTResponseSenderBlock)){
         let user = self.parseUserProfile(value: userInput!)
         DispatchQueue.main.async {
-            ServiceXService.shared.offerService.showPassport(from: UIApplication.shared.keyWindow!.rootViewController!, userProfile: user!) {
+            CredifyServiceX.offer.showPassport(from: UIApplication.shared.keyWindow!.rootViewController!, userProfile: user!) {
                 dismissCB([])
             }
         }

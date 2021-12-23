@@ -80,7 +80,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
 
         override fun onError(throwable: CredifyError) {
           Log.d("CredifySDK", "Error: ${throwable.throwable}")
-          promise.reject(throwable.throwable?.message);
+          promise.reject(throwable.throwable);
         }
       }
     )
@@ -89,7 +89,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
   @ReactMethod
   fun setUserProfile(userDict: ReadableMap) {
     mUserProfile = UserProfile(
-      id = userDict.getInt("id")!!.toString(),
+      id = userDict.getInt("id").toString(),
       name = UserName(
         firstName = userDict.getString("first_name")!!,
         lastName = userDict.getString("last_name")!!,
@@ -143,8 +143,8 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
         }
       },
       offerPageCallback = object : CredifySDK.OfferPageCallback {
-        override fun onClose() {
-          Log.d("CredifySDK", "Offer page is close")
+        override fun onClose(status: RedemptionResult) {
+          Log.d("CredifySDK", "Redemtion Status is " + status.name)
         }
       }
     )
