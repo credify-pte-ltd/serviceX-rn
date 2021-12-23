@@ -10,7 +10,6 @@ RCT_EXTERN_METHOD(showOfferDetail:(NSString *)offerId pushClaimCB:(RCTResponseSe
 RCT_EXTERN_METHOD(showPassport:(RCTResponseSenderBlock)dismissCB)
 RCT_EXTERN_METHOD(setPushClaimRequestStatus:(BOOL)isSuccess)
 RCT_EXTERN_METHOD(appDidBecomeActive:(UIApplication *)application)
-//RCT_EXTERN_METHOD(showReferral)
 
 @end
 
