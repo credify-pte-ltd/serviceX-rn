@@ -15,20 +15,12 @@ import {
 } from 'react-native';
 import serviceX, { OfferData } from 'servicex-rn';
 
-// const API_KEY =
-//   '7kx6vx9p9gZmqrtvHjRTOiSXMkAfZB3s5u3yjLehQHQCtjWrjAk9XlQHR2IOqpuR';
-// const ENV = 'DEV';
-// const PUSH_CLAIM_URL =
-//   'https://dev-demo-api.credify.ninja/housecare/push-claims';
-// const DEMO_USER_URL = 'https://dev-demo-api.credify.ninja/housecare/demo-user';
-// const MARKET_NAME = 'housecare';
-
 const API_KEY =
   '7kx6vx9p9gZmqrtvHjRTOiSXMkAfZB3s5u3yjLehQHQCtjWrjAk9XlQHR2IOqpuR';
-const ENV = 'SIT';
+const ENV = 'SANDBOX';
 const PUSH_CLAIM_URL =
-  'https://sit-demo-api.credify.ninja/housecare/push-claims';
-const DEMO_USER_URL = 'https://sit-demo-api.credify.ninja/housecare/demo-user';
+  'https://sandbox-demo-api.credify.dev/housecare/push-claims';
+const DEMO_USER_URL = 'https://sandbox-demo-api.credify.dev/housecare/demo-user';
 const MARKET_NAME = 'housecare';
 
 export default function App() {
