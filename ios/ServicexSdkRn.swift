@@ -65,7 +65,11 @@ class ServicexSdkRn: NSObject {
     
     @objc(getOfferList:resolve:rejecter:)
     func getOfferList(productTypes: NSArray, resolve: @escaping(RCTPromiseResolveBlock), rejecter reject: @escaping(RCTPromiseRejectBlock)) -> Void {
-        let user = self.parseUserProfile(value: userInput!)
+        guard let ui = userInput else {
+            print("User input was not found")
+            return
+        }
+        let user = self.parseUserProfile(value: ui)
         guard let _productTypes = productTypes as? [String] else { reject("CredifySDK error","productTypes must be a string array", nil)
             return
         }
