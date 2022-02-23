@@ -42,7 +42,7 @@ If you see the issue
 Specs satisfying the `servicex-rn` dependency were found, but they required a higher minimum deployment target.
 ```
 
-Then please increase the supported deplolyment target to at least version 12.1: `platform :ios, '12.1'` in your pod file.
+Then please increase the supported deplolyment target to at least version 13.0: `platform :ios, '13.0'` in your pod file.
 
 If you see the issue:
 
