@@ -1,12 +1,21 @@
 import serviceX
+import Combine
 
 @objc(ServicexSdkRn)
 class ServicexSdkRn: NSObject {
     
     var listOffer: [CCOfferData] = [CCOfferData]()
-    var pushClaimResponseCallback: ((Bool) -> Void)?
     var userInput: NSDictionary?
+    private var cancellables = Set<AnyCancellable>()
+    var pushClaimResponseCallback: ((Result<Void, Error>) -> Void)?
     
+    class UnmanagedError : Error {
+        var error: String
+        
+        init() {
+            self.error = "Unmanaged error"
+        }
+    }
     @objc(initialize:environment:marketName:packageVersion:)
     func initialize(apiKey:String, environment: String, marketName: String, packageVersion: String) -> Void {
         let envDict = ["DEV": CCEnvironmentType.DEV, "PRODUCTION": .PRODUCTION,"SANDBOX":  .SANDBOX,"SIT": .SIT,"UAT": .UAT]
@@ -17,7 +26,7 @@ class ServicexSdkRn: NSObject {
         CredifyServiceX.applicationDidBecomeActive(UIApplication.shared)
     }
     
-      // In case we need to trigger it manually in AppDelegate Callback
+    // In case we need to trigger it manually in AppDelegate Callback
     @objc(appDidBecomeActive:)
     func appDidBecomeActive(application: UIApplication) -> Void {
         CredifyServiceX.applicationDidBecomeActive(application)
@@ -34,12 +43,12 @@ class ServicexSdkRn: NSObject {
             let phoneCountryCode = v["country_code"] as? String
             
             return CCPlatformUserModel(id: "\(id)",
-                                     firstName: firstName,
-                                     lastName: lastName,
-                                     email: email,
-                                     credifyId: credifyId,
-                                     countryCode: phoneCountryCode ?? "",
-                                     phoneNumber: phoneNumber ?? "")
+                                       firstName: firstName,
+                                       lastName: lastName,
+                                       email: email,
+                                       credifyId: credifyId,
+                                       countryCode: phoneCountryCode ?? "",
+                                       phoneNumber: phoneNumber ?? "")
         }
         return nil
     }
@@ -56,19 +65,35 @@ class ServicexSdkRn: NSObject {
     
     @objc(getOfferList:resolve:rejecter:)
     func getOfferList(productTypes: NSArray, resolve: @escaping(RCTPromiseResolveBlock), rejecter reject: @escaping(RCTPromiseRejectBlock)) -> Void {
-        let user = self.parseUserProfile(value: userInput!)
+        guard let ui = userInput else {
+            print("User input was not found")
+            return
+        }
+        let user = self.parseUserProfile(value: ui)
         guard let _productTypes = productTypes as? [String] else { reject("CredifySDK error","productTypes must be a string array", nil)
             return
         }
         
         print(_productTypes)
-        CredifyServiceX.offer.getOffers(phoneNumber: user?.phoneNumber,
-                                                      countryCode: user?.countryCode,
-                                                      localId: user!.id,
-                                                      credifyId: user?.credifyId, productTypes:_productTypes) { [weak self] result in
-            switch result {
-            case .success(let offers):
-                self?.listOffer = offers
+        
+        CredifyServiceX.offer.getOffers(
+            phoneNumber: user?.phoneNumber,
+            countryCode: user?.countryCode,
+            localId: user!.id,
+            credifyId: user?.credifyId,
+            productTypes: _productTypes
+        )
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { completion in
+                
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    print(error)
+                }
+            }, receiveValue: { offers in
+                self.listOffer = offers
                 let offerListRes = OfferListRes(credifyId: user?.credifyId, offerList: offers)
                 let jsonEncoder = JSONEncoder()
                 do{
@@ -79,48 +104,87 @@ class ServicexSdkRn: NSObject {
                 }catch let error as NSError {
                     reject("CredifySDK error","parsing json error", error)
                 }
-            case .failure(let error):
-                print(error)
-                reject("CredifySDK error", "get offerlist error", error)
-            }
-        }
+            }).store(in: &cancellables)
+        
     }
     
     @objc(clearCache)
     func clearCache(){
-        CredifyServiceX.session.resetSession()
+        CredifyServiceX.resetSession()
     }
     
     @objc(setPushClaimRequestStatus:)
     func setPushClaimRequestStatus(isSuccess: Bool){
-        self.pushClaimResponseCallback?(isSuccess)
+        if isSuccess {
+            self.pushClaimResponseCallback?(.success(()))
+        }else {
+            print("push claim token issue")
+            self.pushClaimResponseCallback?(.failure(UnmanagedError.init()))
+        }
         // Dereference callback to avoid memory leak
         self.pushClaimResponseCallback = nil
     }
     
     @objc(showOfferDetail:pushClaimCB:)
     func showOfferDetail(offerId: String, pushClaimCB:@escaping(RCTResponseSenderBlock)) {
-        let user = self.parseUserProfile(value: userInput!)
+        guard let ui = userInput else {
+            print("User input was not found")
+            return
+        }
+        guard let user = self.parseUserProfile(value: ui) else {
+            print("User was not found")
+            return
+        }
+        
         let offer = self.listOffer.first(where: { item -> Bool in
             item.id == offerId
         })
+        
+        guard let offer = offer else {
+            print("Offer was not found")
+            return
+        }
+        
+        guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
+            print("There is no view controller")
+            return
+        }
+        
+        let task = { (credifyId: String) -> Future<Void, Error> in
+            return Future() { promise in
+                pushClaimCB([user.id, credifyId])
+                self.pushClaimResponseCallback = promise
+            }
+        }
+        
         DispatchQueue.main.async {
-            CredifyServiceX.offer.presentModally(from: UIApplication.shared.keyWindow!.rootViewController!, offer: offer!, userProfile: user!){ credifyId, result in
-                // Demo Market call push claim token
-                pushClaimCB([user?.id, credifyId])
-                self.pushClaimResponseCallback = result
-            } completionHandler: { result in
-                print("**** Result is ****")
-                print(result)
+            CredifyServiceX.offer.presentModally(
+                from: vc,
+                offer: offer,
+                userProfile: user,
+                pushClaimTokensTask: task
+            ) { [weak self] result in
+                
             }
         }
     }
     
     @objc(showPassport:)
     func showPassport(dismissCB:@escaping(RCTResponseSenderBlock)){
-        let user = self.parseUserProfile(value: userInput!)
+        guard let ui = userInput else {
+            print("User input was not found")
+            return
+        }
+        guard let user = self.parseUserProfile(value: ui) else {
+            print("User was not found")
+            return
+        }
+        guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
+            print("There is no view controller")
+            return
+        }
         DispatchQueue.main.async {
-            CredifyServiceX.offer.showPassport(from: UIApplication.shared.keyWindow!.rootViewController!, userProfile: user!) {
+            CredifyServiceX.offer.showPassport(from: vc, userProfile: user) {
                 dismissCB([])
             }
         }
