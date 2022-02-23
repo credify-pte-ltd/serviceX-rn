@@ -220,9 +220,9 @@
 				"${BUILT_PRODUCTS_DIR}/glog/glog.framework",
 				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
 				"${BUILT_PRODUCTS_DIR}/servicex-rn/servicex_rn.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/serviceX/core.framework/core",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/core/core.framework/core",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/serviceX/serviceX.framework/serviceX",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/serviceX/FinalSDK.framework/FinalSDK",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FinalSDK/FinalSDK.framework/FinalSDK",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -326,7 +326,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 34C29C245L;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ServicexSdkRnExample/Info.plist;
@@ -354,7 +354,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 34C29C245L;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ServicexSdkRnExample/Info.plist;
