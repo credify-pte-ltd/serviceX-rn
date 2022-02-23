@@ -23,6 +23,7 @@ PODS:
   - KeychainAccess (4.2.2)
   - Kingfisher (7.1.2)
   - lottie-ios (3.3.0)
+  - MarkdownKit (1.7.1)
   - RCTRequired (0.63.4)
   - RCTTypeSafety (0.63.4):
     - FBLazyVector (= 0.63.4)
@@ -249,20 +250,15 @@ PODS:
     - React-Core (= 0.63.4)
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
-  - Realm (10.20.1):
-    - Realm/Headers (= 10.20.1)
-  - Realm/Headers (10.20.1)
-  - RealmSwift (10.20.1):
-    - Realm (= 10.20.1)
-  - serviceX (0.7.0):
+  - serviceX (0.8.2):
     - CredifyCryptoSwift
     - KeychainAccess
     - Kingfisher
     - lottie-ios
-    - RealmSwift
-  - servicex-rn (0.3.1):
+    - MarkdownKit
+  - servicex-rn (0.4.0):
     - React-Core
-    - serviceX (~> 0.7.0)
+    - serviceX (~> 0.8.2)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -303,8 +299,7 @@ SPEC REPOS:
     - KeychainAccess
     - Kingfisher
     - lottie-ios
-    - Realm
-    - RealmSwift
+    - MarkdownKit
     - serviceX
 
 EXTERNAL SOURCES:
@@ -374,6 +369,7 @@ SPEC CHECKSUMS:
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
   Kingfisher: 44ed6a8504763f27bab46163adfac83f5deb240c
   lottie-ios: 6ac74dcc09904798f59b18cb3075c089d76be9ae
+  MarkdownKit: 0b15195c63cf3e39387949c4bdeccde0055e252a
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
   React: b0a957a2c44da4113b0c4c9853d8387f8e64e615
@@ -394,12 +390,10 @@ SPEC CHECKSUMS:
   React-RCTText: 5c51df3f08cb9dedc6e790161195d12bac06101c
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
-  Realm: fac5ecd031fcb81171627b74944c885662d4b266
-  RealmSwift: 9b02d25acb46a14756bde9893abb99e2e3675923
-  serviceX: 4550aa3018d35abb30a168776359c1bc9ec95fe3
-  servicex-rn: 07e359ad97d1b74fba2ad8d5bd043fc809680ba8
+  serviceX: 0576c728bbfc65443338e08e3e16e0bd7e08224c
+  servicex-rn: ab2c5baa842326ff5a6ad6deadaa888e67198a1e
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: a5b218bbdb51a4d4184f314c8b11972b0d7cb4ec
+PODFILE CHECKSUM: eeda483efd8c01624944d9a0ba7dee38f6c6e5b0
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.11.2

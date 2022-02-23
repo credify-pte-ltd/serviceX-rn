@@ -20,7 +20,8 @@ const API_KEY =
 const ENV = 'SANDBOX';
 const PUSH_CLAIM_URL =
   'https://sandbox-demo-api.credify.dev/housecare/push-claims';
-const DEMO_USER_URL = 'https://sandbox-demo-api.credify.dev/housecare/demo-user';
+const DEMO_USER_URL =
+  'https://sandbox-demo-api.credify.dev/housecare/demo-user';
 const MARKET_NAME = 'housecare';
 
 export default function App() {
