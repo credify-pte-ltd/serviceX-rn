@@ -16,5 +16,5 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,m,mm,swift}"
 
   s.dependency "React-Core"
-  s.dependency "serviceX" , '~> 0.8.2'
+  s.dependency "serviceX" , '~> 0.8.3'
 end

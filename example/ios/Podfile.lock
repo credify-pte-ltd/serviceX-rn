@@ -250,15 +250,15 @@ PODS:
     - React-Core (= 0.63.4)
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
-  - serviceX (0.8.2):
+  - serviceX (0.8.3):
     - CredifyCryptoSwift
     - KeychainAccess
     - Kingfisher
     - lottie-ios
     - MarkdownKit
-  - servicex-rn (0.4.0):
+  - servicex-rn (0.5.0):
     - React-Core
-    - serviceX (~> 0.8.2)
+    - serviceX (~> 0.8.3)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -390,10 +390,10 @@ SPEC CHECKSUMS:
   React-RCTText: 5c51df3f08cb9dedc6e790161195d12bac06101c
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
-  serviceX: 0576c728bbfc65443338e08e3e16e0bd7e08224c
-  servicex-rn: ab2c5baa842326ff5a6ad6deadaa888e67198a1e
+  serviceX: 96450cde33879cd15feab96bf28d0adac2b7754e
+  servicex-rn: cc34825c5dc4188f1b43179bc457641f3c6b5782
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
 PODFILE CHECKSUM: eeda483efd8c01624944d9a0ba7dee38f6c6e5b0
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.11.2
