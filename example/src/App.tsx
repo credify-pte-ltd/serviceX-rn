@@ -72,13 +72,8 @@ export default function App() {
       setUser(_user);
       const userProfile = {
         id: _user.id,
-        first_name: _user.firstName,
-        last_name: _user.lastName,
-        middle_name: _user.middleName,
-        full_name: _user.fullName,
         phone_number: _user.phoneNumber,
         country_code: _user.phoneCountryCode,
-        email: _user.email,
         credify_id: _user.credifyId,
       };
       console.log({ userProfile });

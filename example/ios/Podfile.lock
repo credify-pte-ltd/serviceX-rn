@@ -21,7 +21,7 @@ PODS:
     - glog
   - glog (0.3.5)
   - KeychainAccess (4.2.2)
-  - Kingfisher (7.1.2)
+  - Kingfisher (7.2.0)
   - lottie-ios (3.3.0)
   - MarkdownKit (1.7.1)
   - RCTRequired (0.63.4)
@@ -250,7 +250,7 @@ PODS:
     - React-Core (= 0.63.4)
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
-  - serviceX (0.8.3):
+  - serviceX (0.8.7):
     - CredifyCryptoSwift
     - KeychainAccess
     - Kingfisher
@@ -258,7 +258,7 @@ PODS:
     - MarkdownKit
   - servicex-rn (0.5.0):
     - React-Core
-    - serviceX (~> 0.8.3)
+    - serviceX (~> 0.8.7)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -367,7 +367,7 @@ SPEC CHECKSUMS:
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
-  Kingfisher: 44ed6a8504763f27bab46163adfac83f5deb240c
+  Kingfisher: 3ac0b75b155cabc0e544877d1a4deea29feece92
   lottie-ios: 6ac74dcc09904798f59b18cb3075c089d76be9ae
   MarkdownKit: 0b15195c63cf3e39387949c4bdeccde0055e252a
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
@@ -390,8 +390,8 @@ SPEC CHECKSUMS:
   React-RCTText: 5c51df3f08cb9dedc6e790161195d12bac06101c
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
-  serviceX: 96450cde33879cd15feab96bf28d0adac2b7754e
-  servicex-rn: cc34825c5dc4188f1b43179bc457641f3c6b5782
+  serviceX: b4a1cc25dba3de7ba5267a4bf718ee9c2d5ca9bc
+  servicex-rn: f3eb7fa80e91f2c0088a09ddb282b2c82021b1e5
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
 PODFILE CHECKSUM: eeda483efd8c01624944d9a0ba7dee38f6c6e5b0
