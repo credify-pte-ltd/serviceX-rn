@@ -91,8 +91,8 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     mUserProfile = UserProfile(
       id = userDict.getInt("id").toString(),
       name = UserName(
-        firstName = userDict.getString("first_name")!!,
-        lastName = userDict.getString("last_name")!!,
+        firstName = userDict.getString("first_name") ?: "",
+        lastName = userDict.getString("last_name") ?: "",
         middleName = userDict.getString("middle_name"),
         fullName = userDict.getString("full_name"),
       ),
@@ -100,7 +100,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
         phoneNumber = userDict.getString("phone_number")!!,
         countryCode = userDict.getString("country_code")!!,
       ),
-      email = userDict.getString("email")!!,
+      email = userDict.getString("email") ?: "",
       dob = null,
       address = null
     )

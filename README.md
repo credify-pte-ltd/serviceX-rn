@@ -102,6 +102,13 @@ serviceX.initialize(API_KEY, ENV, MARKET_NAME);
 serviceX.clearCache();
 
 //** You need to tell SDK what is current user profile. This must be set before calling getOffers or showOfferDetail or showPassport API
+const userProfile = {
+  id: user.id, // it is used for offer filtering
+  phone_number: user.phoneNumber, //Eg: "383456789"
+  country_code: user.phoneCountryCode, //Eg: "+84"
+  credify_id: user.credifyId, // The user's credifyId is set here (user already have CredifyId in a market system after creating digital passport in the first redemption so if the credifyId is set then user will do authenticating instead of creating new digital passport)
+};
+
 serviceX.setUserProfile(userProfile);
 
 //** Gets a list of offers after filtering for a specific user.
