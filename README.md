@@ -88,6 +88,39 @@ android{
 }
 ```
 
+If some dependencies are not found when building the app (Eg: `Could not find com.dinuscxj:circleprogressbar`), please add jcenter() to build.gradle file. Sample repo in build.gradle file
+
+```
+allprojects {
+    repositories {
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url("$rootDir/../node_modules/react-native/android")
+        }
+        maven {
+            // Android JSC is installed from npm
+            url("$rootDir/../node_modules/jsc-android/dist")
+        }
+        mavenCentral {
+            // We don't want to fetch react-native from Maven Central as there are
+            // older versions over there.
+            content {
+                excludeGroup "com.facebook.react"
+            }
+        }
+        google()
+        jcenter()
+        maven { url 'https://www.jitpack.io' }
+    }
+}
+```
+
+If you have a heap memory issue when building the app so please add this like below in gradle.properties
+
+```
+org.gradle.jvmargs=-Xmx4608m
+```
+
 ## Usage
 
 Please refer to the example project inside the SDK to see how it work with our demo server. For detail of API usages, please check the API type spec.
