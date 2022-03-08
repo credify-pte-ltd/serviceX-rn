@@ -256,7 +256,7 @@ PODS:
     - Kingfisher
     - lottie-ios
     - MarkdownKit
-  - servicex-rn (0.5.0):
+  - servicex-rn (0.7.0):
     - React-Core
     - serviceX (~> 0.8.7)
   - Yoga (1.14.0)
@@ -391,7 +391,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   serviceX: b4a1cc25dba3de7ba5267a4bf718ee9c2d5ca9bc
-  servicex-rn: f3eb7fa80e91f2c0088a09ddb282b2c82021b1e5
+  servicex-rn: 6b4114fbe78b6814ffb0c9069b3cc511d6657a77
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
 PODFILE CHECKSUM: eeda483efd8c01624944d9a0ba7dee38f6c6e5b0

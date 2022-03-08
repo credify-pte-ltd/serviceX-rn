@@ -154,11 +154,15 @@ serviceX.showOfferDetail(
     //** You need to add your push claim request in this callback and tell the SDK for the result
     try {
       const res = await pushClaim(localId, credifyId);
-      console.log({ res });
       serviceX.setPushClaimRequestStatus(true);
     } catch (error) {
       serviceX.setPushClaimRequestStatus(false);
     }
+  },
+  (result: RedemptionStatus) => {
+    // ** Incase you want to get redemption status or just want to refresh the offer list when user close the SDK popup
+    console.log('**** redemtion result = ' + result);
+    offerListHandler();
   }
 );
 

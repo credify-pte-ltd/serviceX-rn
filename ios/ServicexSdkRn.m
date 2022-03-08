@@ -1,6 +1,7 @@
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface RCT_EXTERN_MODULE(ServicexSdkRn, NSObject)
+@interface RCT_EXTERN_MODULE(ServicexSdkRn, RCTEventEmitter)
 
 RCT_EXTERN_METHOD(initialize:(NSString *)apiKey environment:(NSString *)environment marketName:(NSString *)marketName packageVersion:(NSString *)packageVersion)
 RCT_EXTERN_METHOD(setUserProfile:(NSDictionary *)userDict)
@@ -10,6 +11,7 @@ RCT_EXTERN_METHOD(showOfferDetail:(NSString *)offerId pushClaimCB:(RCTResponseSe
 RCT_EXTERN_METHOD(showPassport:(RCTResponseSenderBlock)dismissCB)
 RCT_EXTERN_METHOD(setPushClaimRequestStatus:(BOOL)isSuccess)
 RCT_EXTERN_METHOD(appDidBecomeActive:(UIApplication *)application)
+RCT_EXTERN_METHOD(supportedEvents)
 
 @end
 

@@ -1,11 +1,21 @@
-import { NativeModules } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
 import type { components } from '@credify/api-docs';
 import packageJson from '../package.json';
 import { camelize } from './utils';
 
 type PushClaimCB = (localId: string, credifyId: string) => void;
 
+type RedemptionCB = (status: RedemptionStatus) => void;
+
 type DismissCB = () => void;
+
+const REDEEM_COMPLETED_EVENT = 'onRedeemCompleted';
+
+export enum RedemptionStatus {
+  PENDING,
+  CANCELED,
+  COMPLETED,
+}
 
 type ServicexSdkRnType = {
   initialize(
@@ -34,6 +44,21 @@ export type OfferData = components['OfferData'] & {
 export type UserPayload = { [key: string]: string };
 
 const ServicexSdkNative = NativeModules.ServicexSdkRn as ServicexSdkRnType;
+
+const eventEmitter = new NativeEventEmitter(NativeModules.ServicexSdkRn);
+
+export function setRedempOfferCallback(cb: RedemptionCB) {
+  eventEmitter.removeAllListeners(REDEEM_COMPLETED_EVENT);
+  const subscription = eventEmitter.addListener(
+    REDEEM_COMPLETED_EVENT,
+    (event: any) => {
+      if (cb) {
+        cb(String(event.status).toUpperCase() as unknown as RedemptionStatus);
+      }
+      subscription.remove();
+    }
+  );
+}
 
 /**
  * Gets a list of offers after filtering for a specific user.
@@ -64,7 +89,14 @@ export function clearCache() {
  * @param id - The id of the offer
  * @param pushClaimCB - The callback for organization to push their user's claim token
  */
-export function showOfferDetail(id: string, pushClaimCB: PushClaimCB) {
+export function showOfferDetail(
+  id: string,
+  pushClaimCB: PushClaimCB,
+  redemptionCB?: RedemptionCB
+) {
+  if (redemptionCB) {
+    setRedempOfferCallback(redemptionCB);
+  }
   ServicexSdkNative.showOfferDetail(id, pushClaimCB);
 }
 
