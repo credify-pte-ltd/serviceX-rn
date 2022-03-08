@@ -13,7 +13,7 @@ import {
   TextInput,
   SafeAreaView,
 } from 'react-native';
-import serviceX, { OfferData } from 'servicex-rn';
+import serviceX, { OfferData, RedemptionStatus } from 'servicex-rn';
 
 const API_KEY =
   '7kx6vx9p9gZmqrtvHjRTOiSXMkAfZB3s5u3yjLehQHQCtjWrjAk9XlQHR2IOqpuR';
@@ -43,12 +43,8 @@ export default function App() {
     showLoading(true);
     try {
       const res = await serviceX.getOffers();
-      const credifyId = res.credifyId;
       const offers = res.offerList;
       setOffers(offers);
-      console.log({ res });
-      console.log({ credifyId });
-      console.log({ offers });
     } catch (error) {
       console.log({ error });
     }
@@ -68,7 +64,6 @@ export default function App() {
     try {
       const res = await fetch(`${DEMO_USER_URL}?id=${idText}`);
       const _user = await res.json();
-      console.log({ _user });
       setUser(_user);
       const userProfile = {
         id: _user.id,
@@ -76,7 +71,6 @@ export default function App() {
         country_code: _user.phoneCountryCode,
         credify_id: _user.credifyId,
       };
-      console.log({ userProfile });
       onChangeText(_user.id);
       serviceX.setUserProfile(userProfile);
     } catch (error) {
@@ -96,6 +90,10 @@ export default function App() {
         } catch (error) {
           serviceX.setPushClaimRequestStatus(false);
         }
+      },
+      (result: RedemptionStatus) => {
+        console.log('**** redemtion result = ' + result);
+        offerListHandler();
       }
     );
   }
@@ -123,7 +121,6 @@ export default function App() {
     return (
       <TouchableOpacity
         onPress={() => {
-          console.log({ item });
           showOfferDetail(item.id!!);
         }}
       >

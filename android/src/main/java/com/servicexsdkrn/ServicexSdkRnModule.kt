@@ -1,14 +1,17 @@
 package com.servicexsdkrn
 
+import android.os.Handler
 import one.credify.sdk.CredifySDK
 import one.credify.sdk.core.request.GetOfferListParam
 import one.credify.sdk.core.callback.OfferListCallback
 import one.credify.sdk.core.model.*
 import android.util.Log
 import com.facebook.react.bridge.*
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import one.credify.sdk.core.CredifyError
 import com.google.gson.Gson
 import java.util.*
+import javax.annotation.Nullable
 import kotlin.collections.ArrayList
 
 class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
@@ -39,10 +42,10 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     CredifySDK.instance.clearCache()
   }
 
-  fun toArrayList(array: ReadableArray): ArrayList<String>  {
+  fun toArrayList(array: ReadableArray): ArrayList<String> {
     val size = array.size()
     val arrayList = ArrayList<String>(size)
-    for (i : Int in 0 until size) {
+    for (i: Int in 0 until size) {
       when (array.getType(i)) {
         ReadableType.String -> array.getString(i)?.let { arrayList.add(it) }
         else -> throw java.lang.Exception("Item in Product types must be a String type")
@@ -118,6 +121,13 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
     return mOfferList?.offerList?.single { it.id == id }
   }
 
+  private fun sendEvent(
+    eventName: String,
+    @Nullable params: WritableMap) {
+    this.reactApplicationContext
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+      .emit(eventName, params)
+  }
 
   @ReactMethod
   fun showOfferDetail(offerId: String, pushClaimCB: Callback) {
@@ -145,6 +155,9 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
       offerPageCallback = object : CredifySDK.OfferPageCallback {
         override fun onClose(status: RedemptionResult) {
           Log.d("CredifySDK", "Redemtion Status is " + status.name)
+          val params = Arguments.createMap();
+          params.putString("status", status.name);
+          sendEvent("onRedeemCompleted", params);
         }
       }
     )
@@ -152,7 +165,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
 
   @ReactMethod
   fun showPassport(dismissCB: Callback) {
-    CredifySDK.instance.offerApi.showPassport(this.currentActivity!!, userProfile = mUserProfile!!, callback = object : CredifySDK.PassportPageCallback{
+    CredifySDK.instance.offerApi.showPassport(this.currentActivity!!, userProfile = mUserProfile!!, callback = object : CredifySDK.PassportPageCallback {
       override fun onShow() {
 
       }
@@ -171,15 +184,15 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
       marketName = mMarketName,
       callback = object : CredifySDK.OnShowReferralResultCallback {
         override fun onShow() {
-            Log.d("CredifySDK", "Referral page on Show")
+          Log.d("CredifySDK", "Referral page on Show")
         }
 
         override fun onError(ex: Exception) {
-           Log.d("CredifySDK", "Referral page Error" + ex.message)
+          Log.d("CredifySDK", "Referral page Error" + ex.message)
         }
 
         override fun onClose() {
-           Log.d("CredifySDK", "Referral page is close")
+          Log.d("CredifySDK", "Referral page is close")
         }
       }
     )

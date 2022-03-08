@@ -2,7 +2,7 @@ import serviceX
 import Combine
 
 @objc(ServicexSdkRn)
-class ServicexSdkRn: NSObject {
+class ServicexSdkRn: RCTEventEmitter {
     
     var listOffer: [CCOfferData] = [CCOfferData]()
     var userInput: NSDictionary?
@@ -53,6 +53,10 @@ class ServicexSdkRn: NSObject {
         return nil
     }
     
+    @objc override func supportedEvents() -> [String]! {
+        return ["onRedeemCompleted"]
+    }
+    
     @objc(setUserProfile:)
     func setUserProfile(value:NSDictionary) {
         userInput = value
@@ -73,8 +77,6 @@ class ServicexSdkRn: NSObject {
         guard let _productTypes = productTypes as? [String] else { reject("CredifySDK error","productTypes must be a string array", nil)
             return
         }
-        
-        print(_productTypes)
         
         CredifyServiceX.offer.getOffers(
             phoneNumber: user?.phoneNumber,
@@ -125,8 +127,24 @@ class ServicexSdkRn: NSObject {
         self.pushClaimResponseCallback = nil
     }
     
+    
+    func redemptionResultString(type: RedemptionResult) -> String {
+        switch type {
+        case .completed:
+            return "completed"
+        case .canceled:
+            return "canceled"
+        case .pending:
+            return "pending"
+        @unknown default:
+            return "unknown"
+            
+        }
+    }
+    
     @objc(showOfferDetail:pushClaimCB:)
     func showOfferDetail(offerId: String, pushClaimCB:@escaping(RCTResponseSenderBlock)) {
+        
         guard let ui = userInput else {
             print("User input was not found")
             return
@@ -164,7 +182,8 @@ class ServicexSdkRn: NSObject {
                 userProfile: user,
                 pushClaimTokensTask: task
             ) { [weak self] result in
-                
+                let payload = ["status": self?.redemptionResultString(type: result)]
+                self?.sendEvent(withName: "onRedeemCompleted", body:payload)
             }
         }
     }
