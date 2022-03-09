@@ -31,7 +31,12 @@ export default function App() {
   const [isLoading, showLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    serviceX.initialize(API_KEY, ENV, MARKET_NAME);
+    const customTheme = {
+      primaryBrandyStart: '#fc030b',
+      primaryBrandyEnd: '#0066ff',
+    };
+
+    serviceX.initialize(API_KEY, ENV, MARKET_NAME, customTheme);
     getDemoUsers();
   }, []);
 

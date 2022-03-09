@@ -17,21 +17,6 @@ export enum RedemptionStatus {
   COMPLETED,
 }
 
-type ServicexSdkRnType = {
-  initialize(
-    apiKey: string,
-    environment: string,
-    marketName: string,
-    packageVersion: string
-  ): void;
-  getOfferList(productTypes: string[]): Promise<string>;
-  showOfferDetail(id: string, pushClaimCB: PushClaimCB): void;
-  setUserProfile(payload: UserPayload): void;
-  setPushClaimRequestStatus(isSuccess: boolean): void;
-  clearCache(): void;
-  showPassport(dismissCB: DismissCB): void;
-};
-
 type OfferListRes = {
   credifyId: string;
   offerList: OfferData[];
@@ -42,6 +27,24 @@ export type OfferData = components['OfferData'] & {
 };
 
 export type UserPayload = { [key: string]: string };
+
+export type ThemeCustomizePayload = { [key: string]: any };
+
+type ServicexSdkRnType = {
+  initialize(
+    apiKey: string,
+    environment: string,
+    marketName: string,
+    packageVersion: string,
+    theme?: ThemeCustomizePayload
+  ): void;
+  getOfferList(productTypes: string[]): Promise<string>;
+  showOfferDetail(id: string, pushClaimCB: PushClaimCB): void;
+  setUserProfile(payload: UserPayload): void;
+  setPushClaimRequestStatus(isSuccess: boolean): void;
+  clearCache(): void;
+  showPassport(dismissCB: DismissCB): void;
+};
 
 const ServicexSdkNative = NativeModules.ServicexSdkRn as ServicexSdkRnType;
 
@@ -133,10 +136,17 @@ export function showPassport(dismissCB: DismissCB) {
 export function initialize(
   apiKey: string,
   environment: string,
-  marketName: string
+  marketName: string,
+  theme: ThemeCustomizePayload
 ) {
   const packageVersion = packageJson.version;
-  ServicexSdkNative.initialize(apiKey, environment, marketName, packageVersion);
+  ServicexSdkNative.initialize(
+    apiKey,
+    environment,
+    marketName,
+    packageVersion,
+    theme
+  );
 }
 
 const serviceX = {
