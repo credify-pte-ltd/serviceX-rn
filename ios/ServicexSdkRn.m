@@ -3,7 +3,7 @@
 
 @interface RCT_EXTERN_MODULE(ServicexSdkRn, RCTEventEmitter)
 
-RCT_EXTERN_METHOD(initialize:(NSString *)apiKey environment:(NSString *)environment marketName:(NSString *)marketName packageVersion:(NSString *)packageVersion)
+RCT_EXTERN_METHOD(initialize:(NSString *)apiKey environment:(NSString *)environment marketName:(NSString *)marketName packageVersion:(NSString *)packageVersion theme:(NSDictionary *)theme)
 RCT_EXTERN_METHOD(setUserProfile:(NSDictionary *)userDict)
 RCT_EXTERN_METHOD(getOfferList:(NSArray *)productTypes resolve:(RCTPromiseResolveBlock*)resolve rejecter:(RCTPromiseRejectBlock*)reject)
 RCT_EXTERN_METHOD(clearCache)

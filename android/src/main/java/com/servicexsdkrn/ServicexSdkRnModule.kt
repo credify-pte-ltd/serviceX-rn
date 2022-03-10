@@ -1,7 +1,6 @@
 package com.servicexsdkrn
 
-import android.os.Handler
-import one.credify.sdk.CredifySDK
+import android.graphics.Color
 import one.credify.sdk.core.request.GetOfferListParam
 import one.credify.sdk.core.callback.OfferListCallback
 import one.credify.sdk.core.model.*
@@ -10,11 +9,12 @@ import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import one.credify.sdk.core.CredifyError
 import com.google.gson.Gson
-import java.util.*
+import one.credify.sdk.*
 import javax.annotation.Nullable
 import kotlin.collections.ArrayList
 
-class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext) {
 
   override fun getName(): String {
     return "ServicexSdkRn"
@@ -27,15 +27,92 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
   private var mMarketName: String? = null
 
   @ReactMethod
-  fun initialize(apiKey: String, environment: String, marketName: String, packageVersion: String) {
+  fun initialize(
+    apiKey: String,
+    environment: String,
+    marketName: String,
+    packageVersion: String,
+    theme: ReadableMap?
+  ) {
     mMarketName = marketName
-    CredifySDK.Builder()
-      .withApiKey(apiKey)
-      .withContext(this.reactApplicationContext)
-      .withEnvironment(Environment.valueOf(environment))
-      .withVersion("servicex/rn/android/$packageVersion")
-      .build();
+    val themObj = if (theme == null) null else parseThemeObject(theme)
+
+    CredifySDK.Builder().apply {
+      withApiKey(apiKey)
+      withContext(reactApplicationContext)
+      withEnvironment(Environment.valueOf(environment))
+      if (themObj != null) {
+        withTheme(themObj)
+      }
+      withVersion("servicex/rn/android/$packageVersion")
+    }.build();
+
   }
+
+  fun parseFloatValueFromReadableMap(map: ReadableMap, key: String): Float? {
+    var result: Float? = null
+    try {
+      if (map.hasKey(key)) {
+        result = map.getDouble(key).toFloat()
+      }
+    } catch (e: Exception) {
+
+    }
+
+    return result
+  }
+
+  fun parseThemeObject(themeObj: ReadableMap): ServiceXThemeConfig {
+    val primaryBrandyStart = themeObj.getString("primaryBrandyStart")
+    val primaryBrandyEnd = themeObj.getString("primaryBrandyEnd")
+    val primaryText = themeObj.getString("primaryText")
+    val secondaryActive = themeObj.getString("secondaryActive")
+    val secondaryText = themeObj.getString("secondaryText")
+    val secondaryComponentBackground = themeObj.getString("secondaryComponentBackground")
+    val secondaryBackground = themeObj.getString("secondaryBackground")
+
+    val pageHeaderRadius = parseFloatValueFromReadableMap(themeObj, "pageHeaderRadius")
+    val elevation = parseFloatValueFromReadableMap(themeObj, "shadowHeight")
+    val inputFieldRadius = parseFloatValueFromReadableMap(themeObj, "inputFieldRadius")
+    val buttonRadius = parseFloatValueFromReadableMap(themeObj, "buttonRadius")
+
+    val theme = ServiceXThemeConfig(
+      context = this.reactApplicationContext,
+      color = ThemeColor(
+        primaryBrandyStart = if (primaryBrandyStart != null) Color.parseColor(primaryBrandyStart) else Color.parseColor(
+          "#AB2185"
+        ),
+        primaryBrandyEnd = if (primaryBrandyEnd != null) Color.parseColor(primaryBrandyEnd) else Color.parseColor(
+          "#5A24B3"
+        ),
+        primaryText = if (primaryText != null) Color.parseColor(primaryText) else Color.parseColor(
+          "#333333"
+        ),
+        secondaryActive = if (secondaryActive != null) Color.parseColor(secondaryActive) else Color.parseColor(
+          "#9147D7"
+        ),
+        secondaryText = if (secondaryText != null) Color.parseColor(secondaryText) else Color.parseColor(
+          "#999999"
+        ),
+        secondaryComponentBackground = if (secondaryComponentBackground != null) Color.parseColor(
+          secondaryComponentBackground
+        ) else Color.parseColor("#F0E9F9"),
+        secondaryBackground = if (secondaryBackground != null) Color.parseColor(secondaryBackground) else Color.parseColor(
+          "#F6F8FF"
+        ),
+      ),
+      actionBarTopLeftRadius = pageHeaderRadius ?: 0F,
+      actionBarBottomLeftRadius = pageHeaderRadius ?: 30F,
+      actionBarTopRightRadius = pageHeaderRadius ?: 0F,
+      actionBarBottomRightRadius = pageHeaderRadius ?: 30F,
+      elevation = elevation ?: 4F,
+      inputFieldRadius = inputFieldRadius ?: 5F,
+      buttonRadius = buttonRadius ?: 50F,
+    )
+    return theme
+
+  }
+
 
   @ReactMethod
   fun clearCache() {
@@ -123,7 +200,8 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
 
   private fun sendEvent(
     eventName: String,
-    @Nullable params: WritableMap) {
+    @Nullable params: WritableMap
+  ) {
     this.reactApplicationContext
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
       .emit(eventName, params)
@@ -165,15 +243,18 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) : ReactContextB
 
   @ReactMethod
   fun showPassport(dismissCB: Callback) {
-    CredifySDK.instance.offerApi.showPassport(this.currentActivity!!, userProfile = mUserProfile!!, callback = object : CredifySDK.PassportPageCallback {
-      override fun onShow() {
+    CredifySDK.instance.offerApi.showPassport(
+      this.currentActivity!!,
+      userProfile = mUserProfile!!,
+      callback = object : CredifySDK.PassportPageCallback {
+        override fun onShow() {
 
-      }
+        }
 
-      override fun onClose() {
-        dismissCB.invoke()
-      }
-    })
+        override fun onClose() {
+          dismissCB.invoke()
+        }
+      })
   }
 
   @ReactMethod

@@ -1,6 +1,27 @@
 import serviceX
 import Combine
 
+
+extension UIColor {
+    convenience init(hexString: String) {
+        let hex = hexString.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int = UInt64()
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+        self.init(red: CGFloat(r) / 255, green: CGFloat(g) / 255, blue: CGFloat(b) / 255, alpha: CGFloat(a) / 255)
+    }
+}
+
 @objc(ServicexSdkRn)
 class ServicexSdkRn: RCTEventEmitter {
     
@@ -16,20 +37,15 @@ class ServicexSdkRn: RCTEventEmitter {
             self.error = "Unmanaged error"
         }
     }
-    @objc(initialize:environment:marketName:packageVersion:)
-    func initialize(apiKey:String, environment: String, marketName: String, packageVersion: String) -> Void {
+    
+    @objc(initialize:environment:marketName:packageVersion:theme:)
+    func initialize(apiKey:String, environment: String, marketName: String, packageVersion: String,theme: NSDictionary) -> Void {
         let envDict = ["DEV": CCEnvironmentType.DEV, "PRODUCTION": .PRODUCTION,"SANDBOX":  .SANDBOX,"SIT": .SIT,"UAT": .UAT]
-        
-        let config = serviceXConfig(apiKey: apiKey, env: envDict[environment]!, appName: marketName)
+        let themeData = parseThemeObject(value: theme)
+        let config = serviceXConfig(apiKey: apiKey, env: envDict[environment]!, appName: marketName, theme: themeData ?? serviceXTheme.default)
         CredifyServiceX.configure(config)
         CredifyServiceX.updateUserAgent("servicex/rn/ios/\(packageVersion)")
         CredifyServiceX.applicationDidBecomeActive(UIApplication.shared)
-    }
-    
-    // In case we need to trigger it manually in AppDelegate Callback
-    @objc(appDidBecomeActive:)
-    func appDidBecomeActive(application: UIApplication) -> Void {
-        CredifyServiceX.applicationDidBecomeActive(application)
     }
     
     func parseUserProfile(value:NSDictionary) -> CCPlatformUserModel? {
@@ -51,6 +67,45 @@ class ServicexSdkRn: RCTEventEmitter {
                                        phoneNumber: phoneNumber ?? "")
         }
         return nil
+    }
+    
+    // In case we need to trigger it manually in AppDelegate Callback
+    @objc(appDidBecomeActive:)
+    func appDidBecomeActive(application: UIApplication) -> Void {
+        CredifyServiceX.applicationDidBecomeActive(application)
+    }
+    
+    func parseThemeObject(value:NSDictionary) -> serviceXTheme? {
+        guard let v = value as? [String:Any] else { return nil }
+        
+        let primaryBrandyStart = v["primaryBrandyStart"] as? String
+        let primaryBrandyEnd =  v["primaryBrandyEnd"] as? String
+        let primaryText = v["primaryText"] as? String
+        let secondaryActive = v["secondaryActive"] as? String
+        let secondaryText = v["secondaryText"] as? String
+        let secondaryComponentBackground = v["secondaryComponentBackground"] as? String
+        let secondaryBackground = v["secondaryBackground"] as? String
+        let inputFieldRadius = v["inputFieldRadius"] as? Double ?? serviceXTheme.default.inputFieldRadius
+        let pageHeaderRadius = v["pageHeaderRadius"] as? Double ?? serviceXTheme.default.pageHeaderRadius
+        let buttonRadius = v["buttonRadius"] as? Double ?? serviceXTheme.default.buttonRadius
+        let shadowHeight = v["shadowHeight"] as? CGFloat ?? serviceXTheme.default.shadowHeight
+        
+        let color = ThemeColor(primaryBrandyStart: primaryBrandyStart != nil ? UIColor(hexString: primaryBrandyStart!): ThemeColor.default.primaryBrandyStart,
+                               primaryBrandyEnd: primaryBrandyEnd != nil ? UIColor(hexString: primaryBrandyEnd!): ThemeColor.default.primaryBrandyEnd,
+                               primaryText: primaryText != nil ? UIColor(hexString: primaryText!): ThemeColor.default.primaryText,
+                               secondaryActive: secondaryActive != nil ? UIColor(hexString: secondaryActive!): ThemeColor.default.secondaryActive,
+                               secondaryText: secondaryText != nil ? UIColor(hexString: secondaryText!): ThemeColor.default.secondaryText,
+                               secondaryComponentBackground: secondaryText != nil ? UIColor(hexString: secondaryComponentBackground!): ThemeColor.default.secondaryComponentBackground,
+                               secondaryBackground: secondaryBackground != nil ? UIColor(hexString: secondaryBackground!): ThemeColor.default.secondaryBackground)
+        
+        let theme = serviceXTheme(color: color,
+                                  font: ThemeFont.default,
+                                  icon: ThemeIcon.default,
+                                  inputFieldRadius: inputFieldRadius,
+                                  pageHeaderRadius: pageHeaderRadius,
+                                  buttonRadius: buttonRadius,
+                                  shadowHeight: shadowHeight)
+        return theme
     }
     
     @objc override func supportedEvents() -> [String]! {
@@ -163,10 +218,6 @@ class ServicexSdkRn: RCTEventEmitter {
             return
         }
         
-        guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
-            print("There is no view controller")
-            return
-        }
         
         let task = { (credifyId: String) -> Future<Void, Error> in
             return Future() { promise in
@@ -176,6 +227,11 @@ class ServicexSdkRn: RCTEventEmitter {
         }
         
         DispatchQueue.main.async {
+            guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
+                print("There is no view controller")
+                return
+            }
+            
             CredifyServiceX.offer.presentModally(
                 from: vc,
                 offer: offer,
@@ -198,11 +254,12 @@ class ServicexSdkRn: RCTEventEmitter {
             print("User was not found")
             return
         }
-        guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
-            print("There is no view controller")
-            return
-        }
+        
         DispatchQueue.main.async {
+            guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
+                print("There is no view controller")
+                return
+            }
             CredifyServiceX.offer.showPassport(from: vc, userProfile: user) {
                 dismissCB([])
             }
