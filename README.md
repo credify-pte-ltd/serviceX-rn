@@ -131,6 +131,22 @@ import serviceX from 'servicex-rn';
 //** Initialize SDK
 serviceX.initialize(API_KEY, ENV, MARKET_NAME);
 
+//** If we want to customize the theme (color, border...) used in the SDK then:
+const customTheme = {
+  primaryBrandyStart: '#AB2185',
+  primaryBrandyEnd: '#5A24B3',
+  primaryText: '#333333',
+  secondaryActive: '#9147D7',
+  secondaryText: '#999999',
+  secondaryComponentBackground: '#F0E9F9',
+  secondaryBackground: '#F6F8FF',
+  inputFieldRadius: 5,
+  pageHeaderRadius: 20,
+  buttonRadius: 50,
+};
+
+serviceX.initialize(API_KEY, ENV, MARKET_NAME, customTheme);
+
 //** Clear old user in the SDK
 serviceX.clearCache();
 
