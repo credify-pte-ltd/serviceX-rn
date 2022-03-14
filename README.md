@@ -175,10 +175,11 @@ serviceX.showOfferDetail(
       serviceX.setPushClaimRequestStatus(false);
     }
   },
-  (result: RedemptionStatus) => {
+  async (result: RedemptionStatus) => {
     // ** Incase you want to get redemption status or just want to refresh the offer list when user close the SDK popup
     console.log('**** redemtion result = ' + result);
-    offerListHandler();
+    await getDemoUsers();
+    await offerListHandler();
   }
 );
 

@@ -96,9 +96,10 @@ export default function App() {
           serviceX.setPushClaimRequestStatus(false);
         }
       },
-      (result: RedemptionStatus) => {
+      async (result: RedemptionStatus) => {
         console.log('**** redemtion result = ' + result);
-        offerListHandler();
+        await getDemoUsers();
+        await offerListHandler();
       }
     );
   }
