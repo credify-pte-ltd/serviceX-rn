@@ -1,6 +1,8 @@
 PODS:
+  - Alamofire (5.5.0)
   - boost-for-react-native (1.63.0)
-  - CredifyCryptoSwift (1.1.16)
+  - Credify (0.1.8):
+    - Alamofire (~> 5.4)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.4)
   - FBReactNativeSpec (0.63.4):
@@ -20,10 +22,6 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - KeychainAccess (4.2.2)
-  - Kingfisher (7.2.0)
-  - lottie-ios (3.3.0)
-  - MarkdownKit (1.7.1)
   - RCTRequired (0.63.4)
   - RCTTypeSafety (0.63.4):
     - FBLazyVector (= 0.63.4)
@@ -250,15 +248,9 @@ PODS:
     - React-Core (= 0.63.4)
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
-  - serviceX (0.8.7):
-    - CredifyCryptoSwift
-    - KeychainAccess
-    - Kingfisher
-    - lottie-ios
-    - MarkdownKit
   - servicex-rn (0.9.0):
+    - Credify (~> 0.1.8)
     - React-Core
-    - serviceX (~> 0.8.7)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -294,13 +286,9 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Alamofire
     - boost-for-react-native
-    - CredifyCryptoSwift
-    - KeychainAccess
-    - Kingfisher
-    - lottie-ios
-    - MarkdownKit
-    - serviceX
+    - Credify
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -359,17 +347,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  CredifyCryptoSwift: 8c1d7e9c477bcadd2f457883b32d2c80a187c238
+  Credify: 0b23e0c040768a6d2a998ed3e9916d9b116192d8
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
-  KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
-  Kingfisher: 3ac0b75b155cabc0e544877d1a4deea29feece92
-  lottie-ios: 6ac74dcc09904798f59b18cb3075c089d76be9ae
-  MarkdownKit: 0b15195c63cf3e39387949c4bdeccde0055e252a
   RCTRequired: 082f10cd3f905d6c124597fd1c14f6f2655ff65e
   RCTTypeSafety: 8c9c544ecbf20337d069e4ae7fd9a377aadf504b
   React: b0a957a2c44da4113b0c4c9853d8387f8e64e615
@@ -390,10 +375,9 @@ SPEC CHECKSUMS:
   React-RCTText: 5c51df3f08cb9dedc6e790161195d12bac06101c
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
-  serviceX: b4a1cc25dba3de7ba5267a4bf718ee9c2d5ca9bc
-  servicex-rn: 2b4f3980efac4f09f4835c8967783e054aefce71
+  servicex-rn: 8ec0a797852c089915e796e21f31324814ae7752
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
-PODFILE CHECKSUM: eeda483efd8c01624944d9a0ba7dee38f6c6e5b0
+PODFILE CHECKSUM: a8db059ed91cbe37980284350cd135f44ee3887a
 
 COCOAPODS: 1.11.2
