@@ -1,6 +1,4 @@
-import serviceX
-import Combine
-
+import Credify
 
 extension UIColor {
     convenience init(hexString: String) {
@@ -25,10 +23,11 @@ extension UIColor {
 @objc(ServicexSdkRn)
 class ServicexSdkRn: RCTEventEmitter {
     
-    var listOffer: [CCOfferData] = [CCOfferData]()
+    private var offerIns: Any?
+    private var passportIns: Any?
+    var listOffer: [OfferData] = [OfferData]()
     var userInput: NSDictionary?
-    private var cancellables = Set<AnyCancellable>()
-    var pushClaimResponseCallback: ((Result<Void, Error>) -> Void)?
+    var pushClaimResponseCallback: ((Bool) -> Void)?
     
     class UnmanagedError : Error {
         var error: String
@@ -40,15 +39,17 @@ class ServicexSdkRn: RCTEventEmitter {
     
     @objc(initialize:environment:marketName:packageVersion:theme:)
     func initialize(apiKey:String, environment: String, marketName: String, packageVersion: String,theme: NSDictionary) -> Void {
-        let envDict = ["DEV": CCEnvironmentType.DEV, "PRODUCTION": .PRODUCTION,"SANDBOX":  .SANDBOX,"SIT": .SIT,"UAT": .UAT]
-        let themeData = parseThemeObject(value: theme)
-        let config = serviceXConfig(apiKey: apiKey, env: envDict[environment]!, appName: marketName, theme: themeData ?? serviceXTheme.default)
-        CredifyServiceX.configure(config)
-        CredifyServiceX.updateUserAgent("servicex/rn/ios/\(packageVersion)")
-        CredifyServiceX.applicationDidBecomeActive(UIApplication.shared)
+        
+        passportIns = serviceX.Passport()
+        offerIns = serviceX.Offer()
+        
+        let envDict = ["DEV": CredifyEnvs.dev, "PRODUCTION": .production,"SANDBOX":  .sandbox,"SIT": .sit,"UAT": .uat]
+        let config = serviceXConfig(apiKey: apiKey, env: envDict[environment]!, appName: marketName)
+        serviceX.configure(config)
+        //serviceX.updateUserAgent("servicex/rn/ios/\(packageVersion)")
     }
     
-    func parseUserProfile(value:NSDictionary) -> CCPlatformUserModel? {
+    func parseUserProfile(value:NSDictionary) -> CredifyUserModel? {
         guard let v = value as? [String:Any] else { return nil }
         if let id = v["id"] as? Int {
             let firstName = v["first_name"] as? String ?? ""
@@ -58,54 +59,15 @@ class ServicexSdkRn: RCTEventEmitter {
             let phoneNumber = v["phone_number"] as? String
             let phoneCountryCode = v["country_code"] as? String
             
-            return CCPlatformUserModel(id: "\(id)",
-                                       firstName: firstName,
-                                       lastName: lastName,
-                                       email: email,
-                                       credifyId: credifyId,
-                                       countryCode: phoneCountryCode ?? "",
-                                       phoneNumber: phoneNumber ?? "")
+            return CredifyUserModel(id: "\(id)",
+                                    firstName: firstName,
+                                    lastName: lastName,
+                                    email: email,
+                                    credifyId: credifyId,
+                                    countryCode: phoneCountryCode ?? "",
+                                    phoneNumber: phoneNumber ?? "")
         }
         return nil
-    }
-    
-    // In case we need to trigger it manually in AppDelegate Callback
-    @objc(appDidBecomeActive:)
-    func appDidBecomeActive(application: UIApplication) -> Void {
-        CredifyServiceX.applicationDidBecomeActive(application)
-    }
-    
-    func parseThemeObject(value:NSDictionary) -> serviceXTheme? {
-        guard let v = value as? [String:Any] else { return nil }
-        
-        let primaryBrandyStart = v["primaryBrandyStart"] as? String
-        let primaryBrandyEnd =  v["primaryBrandyEnd"] as? String
-        let primaryText = v["primaryText"] as? String
-        let secondaryActive = v["secondaryActive"] as? String
-        let secondaryText = v["secondaryText"] as? String
-        let secondaryComponentBackground = v["secondaryComponentBackground"] as? String
-        let secondaryBackground = v["secondaryBackground"] as? String
-        let inputFieldRadius = v["inputFieldRadius"] as? Double ?? serviceXTheme.default.inputFieldRadius
-        let pageHeaderRadius = v["pageHeaderRadius"] as? Double ?? serviceXTheme.default.pageHeaderRadius
-        let buttonRadius = v["buttonRadius"] as? Double ?? serviceXTheme.default.buttonRadius
-        let shadowHeight = v["shadowHeight"] as? CGFloat ?? serviceXTheme.default.shadowHeight
-        
-        let color = ThemeColor(primaryBrandyStart: primaryBrandyStart != nil ? UIColor(hexString: primaryBrandyStart!): ThemeColor.default.primaryBrandyStart,
-                               primaryBrandyEnd: primaryBrandyEnd != nil ? UIColor(hexString: primaryBrandyEnd!): ThemeColor.default.primaryBrandyEnd,
-                               primaryText: primaryText != nil ? UIColor(hexString: primaryText!): ThemeColor.default.primaryText,
-                               secondaryActive: secondaryActive != nil ? UIColor(hexString: secondaryActive!): ThemeColor.default.secondaryActive,
-                               secondaryText: secondaryText != nil ? UIColor(hexString: secondaryText!): ThemeColor.default.secondaryText,
-                               secondaryComponentBackground: secondaryText != nil ? UIColor(hexString: secondaryComponentBackground!): ThemeColor.default.secondaryComponentBackground,
-                               secondaryBackground: secondaryBackground != nil ? UIColor(hexString: secondaryBackground!): ThemeColor.default.secondaryBackground)
-        
-        let theme = serviceXTheme(color: color,
-                                  font: ThemeFont.default,
-                                  icon: ThemeIcon.default,
-                                  inputFieldRadius: inputFieldRadius,
-                                  pageHeaderRadius: pageHeaderRadius,
-                                  buttonRadius: buttonRadius,
-                                  shadowHeight: shadowHeight)
-        return theme
     }
     
     @objc override func supportedEvents() -> [String]! {
@@ -119,7 +81,7 @@ class ServicexSdkRn: RCTEventEmitter {
     
     struct OfferListRes: Codable {
         let credifyId: String?
-        let offerList: [CCOfferData]
+        let offerList: [OfferData]
     }
     
     @objc(getOfferList:resolve:rejecter:)
@@ -133,51 +95,37 @@ class ServicexSdkRn: RCTEventEmitter {
             return
         }
         
-        CredifyServiceX.offer.getOffers(
-            phoneNumber: user?.phoneNumber,
-            countryCode: user?.countryCode,
-            localId: user!.id,
-            credifyId: user?.credifyId,
-            productTypes: _productTypes
-        )
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { completion in
-                
-                switch completion {
-                case .finished:
-                    break
+        if let offerIns = offerIns as? serviceX.Offer
+        {
+            offerIns.getOffers(user: user, productTypes: _productTypes) { [weak self] result in
+                switch result {
+                case .success(let offers):
+                    self?.listOffer = offers
+                    let offerListRes = OfferListRes(credifyId: user?.credifyId, offerList: offers)
+                    let jsonEncoder = JSONEncoder()
+                    do{
+                        
+                        let jsonData = try jsonEncoder.encode(offerListRes)
+                        let json = String(data: jsonData, encoding: .utf8)
+                        resolve(json)
+                    }catch let error as NSError {
+                        reject("CredifySDK error","parsing json error", error)
+                    }
                 case .failure(let error):
                     print(error)
                 }
-            }, receiveValue: { offers in
-                self.listOffer = offers
-                let offerListRes = OfferListRes(credifyId: user?.credifyId, offerList: offers)
-                let jsonEncoder = JSONEncoder()
-                do{
-                    
-                    let jsonData = try jsonEncoder.encode(offerListRes)
-                    let json = String(data: jsonData, encoding: .utf8)
-                    resolve(json)
-                }catch let error as NSError {
-                    reject("CredifySDK error","parsing json error", error)
-                }
-            }).store(in: &cancellables)
-        
+            }
+        }
     }
     
     @objc(clearCache)
     func clearCache(){
-        CredifyServiceX.resetSession()
+        //serviceX.resetSession()
     }
     
     @objc(setPushClaimRequestStatus:)
     func setPushClaimRequestStatus(isSuccess: Bool){
-        if isSuccess {
-            self.pushClaimResponseCallback?(.success(()))
-        }else {
-            print("push claim token issue")
-            self.pushClaimResponseCallback?(.failure(UnmanagedError.init()))
-        }
+        self.pushClaimResponseCallback?(isSuccess)
         // Dereference callback to avoid memory leak
         self.pushClaimResponseCallback = nil
     }
@@ -209,22 +157,16 @@ class ServicexSdkRn: RCTEventEmitter {
             return
         }
         
-        let offer = self.listOffer.first(where: { item -> Bool in
+        let offerData = self.listOffer.first(where: { item -> Bool in
             item.id == offerId
         })
         
-        guard let offer = offer else {
+        guard let offerData = offerData else {
             print("Offer was not found")
             return
         }
         
-        
-        let task = { (credifyId: String) -> Future<Void, Error> in
-            return Future() { promise in
-                pushClaimCB([user.id, credifyId])
-                self.pushClaimResponseCallback = promise
-            }
-        }
+      
         
         DispatchQueue.main.async {
             guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
@@ -232,17 +174,26 @@ class ServicexSdkRn: RCTEventEmitter {
                 return
             }
             
-            CredifyServiceX.offer.presentModally(
-                from: vc,
-                offer: offer,
-                userProfile: user,
-                pushClaimTokensTask: task
-            ) { [weak self] result in
-                let payload = ["status": self?.redemptionResultString(type: result)]
-                self?.sendEvent(withName: "onRedeemCompleted", body:payload)
+            let task: ((String, ((Bool) -> Void)?) -> Void) = { credifyId, result in
+                pushClaimCB([user.id, credifyId])
+                self.pushClaimResponseCallback = result
+            }
+            
+            if let offerIns = self.offerIns as? serviceX.Offer
+            {
+                offerIns.presentModally(
+                    from: vc,
+                    offer: offerData,
+                    userProfile: user,
+                    pushClaimTokensTask: task
+                ) { [weak self] result in
+                    let payload = ["status": self?.redemptionResultString(type: result)]
+                    self?.sendEvent(withName: "onRedeemCompleted", body:payload)
+                }
             }
         }
     }
+    
     
     @objc(showPassport:)
     func showPassport(dismissCB:@escaping(RCTResponseSenderBlock)){
@@ -260,9 +211,14 @@ class ServicexSdkRn: RCTEventEmitter {
                 print("There is no view controller")
                 return
             }
-            CredifyServiceX.offer.showPassport(from: vc, userProfile: user) {
-                dismissCB([])
+            
+            if let passportIns = self.passportIns as? serviceX.Passport
+            {
+                passportIns.showMypage(from: vc, user: user) {
+                    dismissCB([])
+                }
             }
+            
         }
     }
     
