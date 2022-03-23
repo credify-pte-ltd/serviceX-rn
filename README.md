@@ -128,25 +128,15 @@ Please refer to the example project inside the SDK to see how it work with our d
 ```js
 import serviceX from 'servicex-rn';
 
-//** Initialize SDK
-serviceX.initialize(API_KEY, ENV, MARKET_NAME);
+/**
+ * Instantiates the SDK
+ * @param apiKey - The org's apiKey
+ * @param environment - The development environment: "SANDBOX" or "PRODUCTION"
+ * @param marketName - The org's name
+ * @param theme - The theme customization and it's optional
+ * */
 
-//** If we want to customize the theme (color, border...) used in the SDK then:
-const customTheme = {
-  primaryBrandyStart: '#AB2185',
-  primaryBrandyEnd: '#5A24B3',
-  primaryText: '#333333',
-  secondaryActive: '#9147D7',
-  secondaryText: '#999999',
-  secondaryComponentBackground: '#F0E9F9',
-  secondaryBackground: '#F6F8FF',
-  inputFieldRadius: 5,
-  pageHeaderRadius: 20,
-  buttonRadius: 50,
-};
-
-serviceX.initialize(API_KEY, ENV, MARKET_NAME, customTheme);
-
+serviceX.initialize(apiKey, environment, marketName, theme);
 //** Clear old user in the SDK
 serviceX.clearCache();
 
@@ -189,6 +179,56 @@ serviceX.showPassport(() => {
   console.log('passport is dismissed');
 });
 ```
+
+### Theme customization
+
+```typescript jsx
+// This is struct for theme customization
+const THEME = {
+  // This is struct for color customization
+  primaryBrandyStart: '#1382F8',
+  primaryBrandyEnd: '#17A6EF',
+  primaryText: '#333333',
+  secondaryActive: '#1483F7',
+  secondaryDisable: '#E0E0E0',
+  secondaryText: '#999999',
+  secondaryComponentBackground: '#DFF3FE',
+  secondaryBackground: '#F5F8FF',
+  primaryButtonTextColor: '#FFFFFF',
+  primaryButtonBrandyStart: '#02D15D',
+  primaryButtonBrandyEnd: '#01B779',
+
+  // This is struct for font customization
+  primaryFontFamily: 'Roboto',
+  secondaryFontFamily: 'Roboto',
+  bigTitleFontSize: 21,
+  bigTitleFontLineHeight: 31,
+  modelTitleFontSize: 20,
+  modelTitleFontLineHeight: 29,
+  sectionTitleFontSize: 16,
+  sectionTitleFontLineHeight: 21,
+  bigFontSize: 18,
+  bigFontLineHeight: 26,
+  normalFontSize: 14,
+  normalFontLineHeight: 18,
+  smallFontSize: 13,
+  smallFontLineHeight: 20,
+  boldFontSize: 15,
+  boldFontLineHeight: 21,
+
+  // Other:
+  inputFieldRadius: 5,
+  modelRadius: 10,
+  buttonRadius: 5,
+  boxShadow: '0px 4px 30px rgba(0, 0, 0, 0.1)',
+};
+```
+
+![Theme](./imgs/Theme.png)
+
+![Theme font](./imgs/ThemeFont.png)
+
+![Theme color](./imgs/ThemeColor.png)
 
 ## Contributing
 

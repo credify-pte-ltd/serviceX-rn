@@ -1,25 +1,5 @@
 import Credify
 
-extension UIColor {
-    convenience init(hexString: String) {
-        let hex = hexString.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int = UInt64()
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (255, 0, 0, 0)
-        }
-        self.init(red: CGFloat(r) / 255, green: CGFloat(g) / 255, blue: CGFloat(b) / 255, alpha: CGFloat(a) / 255)
-    }
-}
-
 @objc(ServicexSdkRn)
 class ServicexSdkRn: RCTEventEmitter {
     
@@ -44,9 +24,75 @@ class ServicexSdkRn: RCTEventEmitter {
         offerIns = serviceX.Offer()
         
         let envDict = ["DEV": CredifyEnvs.dev, "PRODUCTION": .production,"SANDBOX":  .sandbox,"SIT": .sit,"UAT": .uat]
-        let config = serviceXConfig(apiKey: apiKey, env: envDict[environment]!, appName: marketName)
+        let themeData = parseThemeObject(value: theme)
+        let config = serviceXConfig(apiKey: apiKey, env: envDict[environment]!, appName: marketName, theme: themeData ?? serviceXTheme.default, userAgent: "servicex/rn/ios/\(packageVersion)")
         serviceX.configure(config)
-        //serviceX.updateUserAgent("servicex/rn/ios/\(packageVersion)")
+    }
+    
+    func parseThemeObject(value:NSDictionary) -> serviceXTheme? {
+        guard let v = value as? [String:Any] else { return nil }
+        // Color theme:
+        let primaryBrandyStart = v["primaryBrandyStart"] as? String
+        let primaryBrandyEnd =  v["primaryBrandyEnd"] as? String
+        let primaryText = v["primaryText"] as? String
+        let secondaryActive = v["secondaryActive"] as? String
+        let secondaryDisable = v["secondaryDisable"] as? String
+        let secondaryText = v["secondaryText"] as? String
+        let secondaryComponentBackground = v["secondaryComponentBackground"] as? String
+        let secondaryBackground = v["secondaryBackground"] as? String
+        let primaryButtonTextColor = v["primaryButtonTextColor"] as? String
+        let primaryButtonBrandyStart = v["primaryButtonBrandyStart"] as? String
+        let primaryButtonBrandyEnd = v["primaryButtonBrandyEnd"] as? String
+        
+        // Font theme:
+        let primaryFontFamily = v["primaryFontFamily"] as? String
+        let secondaryFontFamily =  v["secondaryFontFamily"] as? String
+        let bigTitleFontSize = v["bigTitleFontSize"] as? Int ?? serviceXTheme.default.font.bigTitleFontSize
+        let bigTitleFontLineHeight = v["bigTitleFontLineHeight"] as? Int ?? serviceXTheme.default.font.bigTitleFontLineHeight
+        let modelTitleFontSize = v["modelTitleFontSize"] as? Int ?? serviceXTheme.default.font.modelTitleFontSize
+        let modelTitleFontLineHeight = v["modelTitleFontLineHeight"] as? Int ?? serviceXTheme.default.font.modelTitleFontLineHeight
+        let sectionTitleFontSize = v["sectionTitleFontSize"] as? Int ?? serviceXTheme.default.font.sectionTitleFontSize
+        let sectionTitleFontLineHeight = v["sectionTitleFontLineHeight"] as? Int ?? serviceXTheme.default.font.sectionTitleFontLineHeight
+        let bigFontSize = v["bigFontSize"] as? Int ?? serviceXTheme.default.font.bigFontSize
+        let bigFontLineHeight = v["bigFontLineHeight"] as? Int ?? serviceXTheme.default.font.bigFontLineHeight
+        let normalFontSize = v["normalFontSize"] as? Int ?? serviceXTheme.default.font.normalFontSize
+        let normalFontLineHeight = v["normalFontLineHeight"] as? Int ?? serviceXTheme.default.font.normalFontLineHeight
+        let smallFontSize = v["smallFontSize"] as? Int ?? serviceXTheme.default.font.smallFontSize
+        let smallFontLineHeight = v["smallFontLineHeight"] as? Int ?? serviceXTheme.default.font.smallFontLineHeight
+        let boldFontSize = v["boldFontSize"] as? Int ?? serviceXTheme.default.font.boldFontSize
+        let boldFontLineHeight = v["smallFontLineHeight"] as? Int ?? serviceXTheme.default.font.boldFontLineHeight
+       
+        
+        
+        // Overall
+        let inputFieldRadius = v["inputFieldRadius"] as? Double ?? serviceXTheme.default.inputFieldRadius
+        let modelRadius = v["modelRadius"] as? Double ?? serviceXTheme.default.modalRadius
+        let buttonRadius = v["buttonRadius"] as? Double ?? serviceXTheme.default.buttonRadius
+        let boxShadow = v["boxShadow"] as? String
+        
+        let color = ThemeColor(primaryBrandyStart: primaryBrandyStart ?? ThemeColor.default.primaryBrandyStart,
+                               primaryBrandyEnd: primaryBrandyEnd ?? ThemeColor.default.primaryBrandyEnd,
+                               primaryText: primaryText ?? ThemeColor.default.primaryText,
+                               secondaryActive: secondaryActive ?? ThemeColor.default.secondaryActive,
+                               secondaryDisable: secondaryDisable ?? ThemeColor.default.secondaryDisable,
+                               secondaryText: secondaryText ?? ThemeColor.default.secondaryText,
+                               secondaryComponentBackground: secondaryComponentBackground ?? ThemeColor.default.secondaryComponentBackground,
+                               secondaryBackground: secondaryBackground ?? ThemeColor.default.secondaryBackground,
+                               primaryButtonTextColor: primaryButtonTextColor ?? ThemeColor.default.primaryButtonTextColor,
+                               primaryButtonBrandyStart: primaryButtonBrandyStart ?? ThemeColor.default.primaryButtonBrandyStart,
+                               primaryButtonBrandyEnd: primaryButtonBrandyEnd ?? ThemeColor.default.primaryButtonBrandyEnd
+                               
+        )
+        
+        let font = ThemeFont(primaryFontFamily: primaryFontFamily ?? ThemeFont.default.primaryFontFamily, secondaryFontFamily: secondaryFontFamily ?? ThemeFont.default.secondaryFontFamily, bigTitleFontSize: bigTitleFontSize, bigTitleFontLineHeight: bigTitleFontLineHeight, modelTitleFontSize: modelTitleFontSize, modelTitleFontLineHeight: modelTitleFontLineHeight, sectionTitleFontSize: sectionTitleFontSize, sectionTitleFontLineHeight: sectionTitleFontLineHeight, bigFontSize: bigFontSize, bigFontLineHeight: bigFontLineHeight, normalFontSize: normalFontSize, normalFontLineHeight: normalFontLineHeight, smallFontSize: smallFontSize, smallFontLineHeight: smallFontLineHeight, boldFontSize: boldFontSize, boldFontLineHeight: boldFontLineHeight)
+        
+        let theme = serviceXTheme(color: color,
+                                  font: font,
+                                  inputFieldRadius: inputFieldRadius,
+                                  modelRadius: modelRadius,
+                                  buttonRadius: buttonRadius,
+                                  boxShadow: boxShadow ?? serviceXTheme.default.boxShadow)
+        return theme
     }
     
     func parseUserProfile(value:NSDictionary) -> CredifyUserModel? {
@@ -54,6 +100,7 @@ class ServicexSdkRn: RCTEventEmitter {
         if let id = v["id"] as? Int {
             let firstName = v["first_name"] as? String ?? ""
             let lastName =  v["last_name"] as? String ?? ""
+            let fullName =  v["full_name"] as? String ?? ""
             let email = v["email"] as? String ?? ""
             let credifyId = v["credify_id"] as? String
             let phoneNumber = v["phone_number"] as? String
@@ -62,6 +109,7 @@ class ServicexSdkRn: RCTEventEmitter {
             return CredifyUserModel(id: "\(id)",
                                     firstName: firstName,
                                     lastName: lastName,
+                                    fullName: fullName,
                                     email: email,
                                     credifyId: credifyId,
                                     countryCode: phoneCountryCode ?? "",
@@ -99,9 +147,9 @@ class ServicexSdkRn: RCTEventEmitter {
         {
             offerIns.getOffers(user: user, productTypes: _productTypes) { [weak self] result in
                 switch result {
-                case .success(let offers):
-                    self?.listOffer = offers
-                    let offerListRes = OfferListRes(credifyId: user?.credifyId, offerList: offers)
+                case .success(let offerListInfo):
+                    self?.listOffer = offerListInfo.offers
+                    let offerListRes = OfferListRes(credifyId: user?.credifyId, offerList: offerListInfo.offers)
                     let jsonEncoder = JSONEncoder()
                     do{
                         
@@ -117,12 +165,12 @@ class ServicexSdkRn: RCTEventEmitter {
             }
         }
     }
-    
+
     @objc(clearCache)
     func clearCache(){
         //serviceX.resetSession()
     }
-    
+        
     @objc(setPushClaimRequestStatus:)
     func setPushClaimRequestStatus(isSuccess: Bool){
         self.pushClaimResponseCallback?(isSuccess)
@@ -166,7 +214,7 @@ class ServicexSdkRn: RCTEventEmitter {
             return
         }
         
-      
+        
         
         DispatchQueue.main.async {
             guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
