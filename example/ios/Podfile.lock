@@ -1,7 +1,7 @@
 PODS:
   - Alamofire (5.5.0)
   - boost-for-react-native (1.63.0)
-  - Credify (0.2.2):
+  - Credify (0.2.3):
     - Alamofire (~> 5.4)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.4)
@@ -248,8 +248,8 @@ PODS:
     - React-Core (= 0.63.4)
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
-  - servicex-rn (0.10.0):
-    - Credify (~> 0.2.2)
+  - servicex-rn (0.11.0):
+    - Credify (~> 0.2.3)
     - React-Core
   - Yoga (1.14.0)
 
@@ -349,7 +349,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  Credify: 36ce99e1b45d4d9b8812d91ea90b41bf9605c826
+  Credify: 81670da03a875c986b6035d89651053953d19fe8
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
@@ -375,7 +375,7 @@ SPEC CHECKSUMS:
   React-RCTText: 5c51df3f08cb9dedc6e790161195d12bac06101c
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
-  servicex-rn: e27f4348f1f166090be156399c30b3e0c4e7ec1f
+  servicex-rn: 67bc7fc71fb49a2277bb86294859dd3f69e1aaa7
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
 PODFILE CHECKSUM: a8db059ed91cbe37980284350cd135f44ee3887a
