@@ -180,6 +180,8 @@ serviceX.showPassport(() => {
 });
 ```
 
+> **Important**: In the first callback of the `serviceX.showOfferDetail`, you need to keep `credifyId` on your side. You have to send the `credifyId` to Credify SDK when you use the methods that require `credifyId`. E.g: `serviceX.setUserProfile`. You have to use `serviceX.setUserProfile` to update `credifyId` as soon as possible.
+
 ### Theme customization
 
 ```typescript jsx
