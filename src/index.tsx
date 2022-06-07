@@ -1,4 +1,7 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import {
+  NativeEventEmitter,
+  NativeModules,
+} from 'react-native';
 import type { components } from '@credify/api-docs';
 import packageJson from '../package.json';
 import { camelize } from './utils';
@@ -9,12 +12,18 @@ type RedemptionCB = (status: RedemptionStatus) => void;
 
 type DismissCB = () => void;
 
-const REDEEM_COMPLETED_EVENT = 'onRedeemCompleted';
-
 export enum RedemptionStatus {
   PENDING,
   CANCELED,
   COMPLETED,
+}
+
+const NATIVE_EVENT = 'nativeEvent';
+
+enum EventType {
+  COMPLETION = 'completion',
+  REDEEM_COMPLETED = 'redeemCompleted',
+  PUSH_CLAIM_TOKEN = 'pushClaimToken',
 }
 
 type OfferListRes = {
@@ -39,28 +48,58 @@ type ServicexSdkRnType = {
     theme?: ThemeCustomizePayload
   ): void;
   getOfferList(productTypes: string[]): Promise<string>;
-  showOfferDetail(id: string, pushClaimCB: PushClaimCB): void;
+  showOfferDetail(id: string): void;
   setUserProfile(payload: UserPayload): void;
   setPushClaimRequestStatus(isSuccess: boolean): void;
   clearCache(): void;
-  showPassport(dismissCB: DismissCB): void;
+  showPassport(): void;
 };
 
 const ServicexSdkNative = NativeModules.ServicexSdkRn as ServicexSdkRnType;
 
 const eventEmitter = new NativeEventEmitter(NativeModules.ServicexSdkRn);
 
-export function setRedempOfferCallback(cb: RedemptionCB) {
-  eventEmitter.removeAllListeners(REDEEM_COMPLETED_EVENT);
-  const subscription = eventEmitter.addListener(
-    REDEEM_COMPLETED_EVENT,
-    (event: any) => {
-      if (cb) {
-        cb(String(event.status).toUpperCase() as unknown as RedemptionStatus);
-      }
-      subscription.remove();
+let _redemptionCB: RedemptionCB | undefined;
+let _pushClaimCB: PushClaimCB | undefined;
+let _dismissCB: DismissCB | undefined;
+
+function subscribeEvent() {
+  eventEmitter.removeAllListeners(NATIVE_EVENT);
+  eventEmitter.addListener(NATIVE_EVENT, (event: any) => {
+    console.log('Received event: ', event);
+    onReceiveEvent(event);
+  });
+  console.log('Subscribed event: ' + NATIVE_EVENT);
+}
+
+function onReceiveEvent(event: any) {
+  if (!event) return;
+
+  const payload = event.payload;
+
+  switch (event.type) {
+    case EventType.PUSH_CLAIM_TOKEN: {
+      _pushClaimCB?.(payload.localId, payload.credifyId);
+      break;
     }
-  );
+    case EventType.REDEEM_COMPLETED: {
+      _redemptionCB?.(
+        String(event.status).toUpperCase() as unknown as RedemptionStatus
+      );
+      break;
+    }
+    case EventType.COMPLETION: {
+      _dismissCB?.();
+
+      _dismissCB = undefined;
+      _pushClaimCB = undefined;
+      _redemptionCB = undefined;
+      break;
+    }
+    default: {
+      console.log('Unsupported event type: ' + event.type);
+    }
+  }
 }
 
 /**
@@ -91,16 +130,17 @@ export function clearCache() {
  * Begin redemption flow
  * @param id - The id of the offer
  * @param pushClaimCB - The callback for organization to push their user's claim token
+ * @param redemptionCB - The callback notifies that the page is closed
  */
 export function showOfferDetail(
   id: string,
   pushClaimCB: PushClaimCB,
   redemptionCB?: RedemptionCB
 ) {
-  if (redemptionCB) {
-    setRedempOfferCallback(redemptionCB);
-  }
-  ServicexSdkNative.showOfferDetail(id, pushClaimCB);
+  _pushClaimCB = pushClaimCB;
+  _redemptionCB = redemptionCB;
+
+  ServicexSdkNative.showOfferDetail(id);
 }
 
 /**
@@ -124,7 +164,9 @@ export function setPushClaimRequestStatus(isSuccess: boolean) {
  * @param dismissCB - callback for dismiss action ( user close the passport window )
  */
 export function showPassport(dismissCB: DismissCB) {
-  ServicexSdkNative.showPassport(dismissCB);
+  _dismissCB = dismissCB;
+
+  ServicexSdkNative.showPassport();
 }
 
 /**
@@ -147,6 +189,7 @@ export function initialize(
     packageVersion,
     theme
   );
+  subscribeEvent();
 }
 
 const serviceX = {

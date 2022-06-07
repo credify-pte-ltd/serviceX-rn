@@ -248,7 +248,7 @@ PODS:
     - React-Core (= 0.63.4)
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
-  - servicex-rn (0.12.0):
+  - servicex-rn (0.12.1):
     - Credify (~> 0.4.1)
     - React-Core
   - Yoga (1.14.0)
@@ -375,9 +375,9 @@ SPEC CHECKSUMS:
   React-RCTText: 5c51df3f08cb9dedc6e790161195d12bac06101c
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
-  servicex-rn: 50e1808bce3371c9e4af763d6fd0a80fcf433ca9
+  servicex-rn: 14c51cde410f414c2fc07b8241fb3e398db122de
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
 PODFILE CHECKSUM: a8db059ed91cbe37980284350cd135f44ee3887a
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

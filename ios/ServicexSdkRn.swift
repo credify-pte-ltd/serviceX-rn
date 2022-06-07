@@ -9,12 +9,49 @@ class ServicexSdkRn: RCTEventEmitter {
     var userInput: NSDictionary?
     var pushClaimResponseCallback: ((Bool) -> Void)?
     
+    private let nativeEvent = "nativeEvent"
+    
+    enum EventType: String {
+        case completion
+        case redeemCompleted
+        case pushClaimToken
+    }
+    
     class UnmanagedError : Error {
         var error: String
         
         init() {
             self.error = "Unmanaged error"
         }
+    }
+    
+    private func sendPushClaimTokenEvent(localId: String, credifyId: String) {
+        let payload = self.createEventPayload(
+            type: EventType.pushClaimToken.rawValue,
+            payload: [
+                "localId": localId,
+                "credifyId": credifyId
+            ]
+        )
+        self.sendEvent(withName: self.nativeEvent, body: payload)
+    }
+    
+    private func sendRedeemedOfferEvent(status: String?) {
+        let payload = self.createEventPayload(
+            type: EventType.redeemCompleted.rawValue,
+            payload: [
+                "status": status
+            ]
+        )
+        self.sendEvent(withName: self.nativeEvent, body: payload)
+    }
+    
+    private func sendCompletionEvent() {
+        let payload = self.createEventPayload(
+            type: EventType.completion.rawValue,
+            payload: [:]
+        )
+        self.sendEvent(withName: self.nativeEvent, body: payload)
     }
     
     @objc(initialize:environment:marketName:packageVersion:theme:)
@@ -119,7 +156,7 @@ class ServicexSdkRn: RCTEventEmitter {
     }
     
     @objc override func supportedEvents() -> [String]! {
-        return ["onRedeemCompleted"]
+        return ["nativeEvent"]
     }
     
     @objc(setUserProfile:)
@@ -193,8 +230,15 @@ class ServicexSdkRn: RCTEventEmitter {
         }
     }
     
-    @objc(showOfferDetail:pushClaimCB:)
-    func showOfferDetail(offerId: String, pushClaimCB:@escaping(RCTResponseSenderBlock)) {
+    func createEventPayload(type: String, payload: [String : Any?]) -> [String : Any?] {
+        return [
+            "type": type,
+            "payload": payload
+        ]
+    }
+    
+    @objc(showOfferDetail:)
+    func showOfferDetail(offerId: String) {
         
         guard let ui = userInput else {
             print("User input was not found")
@@ -214,8 +258,6 @@ class ServicexSdkRn: RCTEventEmitter {
             return
         }
         
-        
-        
         DispatchQueue.main.async {
             guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
                 print("There is no view controller")
@@ -223,7 +265,7 @@ class ServicexSdkRn: RCTEventEmitter {
             }
             
             let task: ((String, ((Bool) -> Void)?) -> Void) = { credifyId, result in
-                pushClaimCB([user.id, credifyId])
+                self.sendPushClaimTokenEvent(localId: user.id, credifyId: credifyId)
                 self.pushClaimResponseCallback = result
             }
             
@@ -235,16 +277,15 @@ class ServicexSdkRn: RCTEventEmitter {
                     userProfile: user,
                     pushClaimTokensTask: task
                 ) { [weak self] result in
-                    let payload = ["status": self?.redemptionResultString(type: result)]
-                    self?.sendEvent(withName: "onRedeemCompleted", body:payload)
+                    self?.sendRedeemedOfferEvent(status: self?.redemptionResultString(type: result))
+                    self?.sendCompletionEvent()
                 }
             }
         }
     }
     
-    
-    @objc(showPassport:)
-    func showPassport(dismissCB:@escaping(RCTResponseSenderBlock)){
+    @objc(showPassport)
+    func showPassport(){
         guard let ui = userInput else {
             print("User input was not found")
             return
@@ -263,10 +304,9 @@ class ServicexSdkRn: RCTEventEmitter {
             if let passportIns = self.passportIns as? serviceX.Passport
             {
                 passportIns.showMypage(from: vc, user: user) {
-                    dismissCB([])
+                    self.sendCompletionEvent()
                 }
             }
-            
         }
     }
     
