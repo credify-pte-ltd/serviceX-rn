@@ -160,10 +160,12 @@ export function setPushClaimRequestStatus(isSuccess: boolean) {
 }
 
 /**
- * Show Credify passport page for user to login to see the offers's status
+ * Show Credify passport page for user to login to see the offer's status
+ * @param pushClaimCB - The callback for organization to push their user's claim token
  * @param dismissCB - callback for dismiss action ( user close the passport window )
  */
-export function showPassport(dismissCB: DismissCB) {
+export function showPassport(pushClaimCB: PushClaimCB, dismissCB: DismissCB) {
+  _pushClaimCB = pushClaimCB;
   _dismissCB = dismissCB;
 
   ServicexSdkNative.showPassport();

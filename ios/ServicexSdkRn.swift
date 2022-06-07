@@ -295,6 +295,11 @@ class ServicexSdkRn: RCTEventEmitter {
             return
         }
         
+        let task: ((String, ((Bool) -> Void)?) -> Void) = { credifyId, result in
+            self.sendPushClaimTokenEvent(localId: user.id, credifyId: credifyId)
+            self.pushClaimResponseCallback = result
+        }
+        
         DispatchQueue.main.async {
             guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
                 print("There is no view controller")
@@ -303,11 +308,10 @@ class ServicexSdkRn: RCTEventEmitter {
             
             if let passportIns = self.passportIns as? serviceX.Passport
             {
-                passportIns.showMypage(from: vc, user: user) {
+                passportIns.showMypage(from: vc, user: user, pushClaimTokensTask: task) {
                     self.sendCompletionEvent()
                 }
             }
         }
     }
-    
 }
