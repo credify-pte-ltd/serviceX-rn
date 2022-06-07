@@ -58,9 +58,20 @@ export default function App() {
   }
 
   function showPassportHandler() {
-    serviceX.showPassport(() => {
-      console.log('passport is dismissed');
-    });
+    serviceX.showPassport(
+      async (localId: string, credifyId: string) => {
+        try {
+          const res = await pushClaim(localId, credifyId);
+          console.log({ res });
+          serviceX.setPushClaimRequestStatus(true);
+        } catch (error) {
+          serviceX.setPushClaimRequestStatus(false);
+        }
+      },
+      () => {
+        console.log('passport is dismissed');
+      }
+    );
   }
 
   async function getDemoUsers() {
@@ -75,6 +86,9 @@ export default function App() {
         phone_number: _user.phoneNumber,
         country_code: _user.phoneCountryCode,
         credify_id: _user.credifyId,
+        first_name: _user.firstName,
+        last_name: _user.lastName,
+        full_name: _user.fullName,
       };
       onChangeText(_user.id);
       serviceX.setUserProfile(userProfile);
