@@ -1,16 +1,14 @@
 package com.servicexsdkrn
 
-import android.graphics.Color
 import one.credify.sdk.core.request.GetOfferListParam
 import one.credify.sdk.core.callback.OfferListCallback
 import one.credify.sdk.core.model.*
 import android.util.Log
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import one.credify.sdk.core.CredifyError
 import com.google.gson.Gson
+import com.servicexsdkrn.util.Parser
 import one.credify.sdk.*
-import javax.annotation.Nullable
 import kotlin.collections.ArrayList
 
 class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
@@ -20,11 +18,60 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
     return "ServicexSdkRn"
   }
 
-  private var mCredifyId: String? = null
   private var mUserProfile: UserProfile? = null
   private var mOfferList: OfferList? = null
   private var mPushClaimResultCallback: CredifySDK.PushClaimResultCallback? = null
   private var mMarketName: String? = null
+
+  private val mNativeEvent = "nativeEvent"
+
+  enum class EventType(val rawValue: String) {
+    COMPLETION("completion"),
+    REDEEM_COMPLETED("redeemCompleted"),
+    PUSH_CLAIM_TOKEN("pushClaimToken"),
+  }
+
+  private fun sendEvent(payload: WritableMap?) {
+    this.reactApplicationContext
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+      .emit(mNativeEvent, payload)
+  }
+
+  private fun createEventPayload(type: String, payload: WritableMap?): WritableMap {
+    val newPayload = Arguments.createMap().apply {
+      putString("type", type)
+      payload?.let {
+        putMap("payload", it)
+      }
+    }
+    return newPayload
+  }
+
+  private fun sendPushClaimTokenEvent(localId: String, credifyId: String) {
+    val payload = createEventPayload(
+      type = EventType.PUSH_CLAIM_TOKEN.rawValue,
+      payload = Arguments.createMap().apply {
+        putString("localId", localId)
+        putString("credifyId", credifyId)
+      }
+    )
+    sendEvent(payload = payload)
+  }
+
+  private fun sendRedeemedOfferEvent(status: RedemptionResult) {
+    val payload = createEventPayload(
+      type = EventType.REDEEM_COMPLETED.rawValue,
+      payload = Arguments.createMap().apply {
+        putString("status", status.name)
+      }
+    )
+    sendEvent(payload = payload)
+  }
+
+  private fun sendCompletionEvent() {
+    val payload = createEventPayload(type = EventType.COMPLETION.rawValue, payload = null)
+    sendEvent(payload = payload)
+  }
 
   @ReactMethod
   fun initialize(
@@ -35,7 +82,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
     theme: ReadableMap?
   ) {
     mMarketName = marketName
-    val themObj = if (theme == null) null else parseThemeObject(theme)
+    val themObj = if (theme == null) null else Parser.parseThemeObject(theme)
 
     CredifySDK.Builder().apply {
       withApiKey(apiKey)
@@ -49,97 +96,14 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
 
   }
 
-  fun parseFloatValueFromReadableMap(map: ReadableMap, key: String): Float? {
-    var result: Float? = null
-    try {
-      if (map.hasKey(key)) {
-        result = map.getDouble(key).toFloat()
-      }
-    } catch (e: Exception) {
-
-    }
-
-    return result
-  }
-
-  fun parseThemeObject(themeObj: ReadableMap): ServiceXThemeConfig {
-    val primaryBrandyStart = themeObj.getString("primaryBrandyStart")
-    val primaryBrandyEnd = themeObj.getString("primaryBrandyEnd")
-    val primaryText = themeObj.getString("primaryText")
-    val secondaryActive = themeObj.getString("secondaryActive")
-    val secondaryText = themeObj.getString("secondaryText")
-    val secondaryComponentBackground = themeObj.getString("secondaryComponentBackground")
-    val secondaryBackground = themeObj.getString("secondaryBackground")
-
-    val pageHeaderRadius = parseFloatValueFromReadableMap(themeObj, "pageHeaderRadius")
-    val elevation = parseFloatValueFromReadableMap(themeObj, "shadowHeight")
-    val inputFieldRadius = parseFloatValueFromReadableMap(themeObj, "inputFieldRadius")
-    val buttonRadius = parseFloatValueFromReadableMap(themeObj, "buttonRadius")
-
-    val theme = ServiceXThemeConfig(
-      context = this.reactApplicationContext,
-      color = ThemeColor(
-        primaryBrandyStart = if (primaryBrandyStart != null) Color.parseColor(primaryBrandyStart) else Color.parseColor(
-          "#AB2185"
-        ),
-        primaryBrandyEnd = if (primaryBrandyEnd != null) Color.parseColor(primaryBrandyEnd) else Color.parseColor(
-          "#5A24B3"
-        ),
-        primaryText = if (primaryText != null) Color.parseColor(primaryText) else Color.parseColor(
-          "#333333"
-        ),
-        secondaryActive = if (secondaryActive != null) Color.parseColor(secondaryActive) else Color.parseColor(
-          "#9147D7"
-        ),
-        secondaryText = if (secondaryText != null) Color.parseColor(secondaryText) else Color.parseColor(
-          "#999999"
-        ),
-        secondaryComponentBackground = if (secondaryComponentBackground != null) Color.parseColor(
-          secondaryComponentBackground
-        ) else Color.parseColor("#F0E9F9"),
-        secondaryBackground = if (secondaryBackground != null) Color.parseColor(secondaryBackground) else Color.parseColor(
-          "#F6F8FF"
-        ),
-      ),
-      actionBarTopLeftRadius = pageHeaderRadius ?: 0F,
-      actionBarBottomLeftRadius = pageHeaderRadius ?: 30F,
-      actionBarTopRightRadius = pageHeaderRadius ?: 0F,
-      actionBarBottomRightRadius = pageHeaderRadius ?: 30F,
-      elevation = elevation ?: 4F,
-      inputFieldRadius = inputFieldRadius ?: 5F,
-      buttonRadius = buttonRadius ?: 50F,
-    )
-    return theme
-
-  }
-
-
-  @ReactMethod
-  fun clearCache() {
-    CredifySDK.instance.clearCache()
-  }
-
-  fun toArrayList(array: ReadableArray): ArrayList<String> {
-    val size = array.size()
-    val arrayList = ArrayList<String>(size)
-    for (i: Int in 0 until size) {
-      when (array.getType(i)) {
-        ReadableType.String -> array.getString(i)?.let { arrayList.add(it) }
-        else -> throw java.lang.Exception("Item in Product types must be a String type")
-      }
-    }
-    return arrayList
-  }
-
-
   @ReactMethod
   fun getOfferList(productTypes: ReadableArray, promise: Promise) {
     val params = GetOfferListParam(
       phoneNumber = mUserProfile?.phone?.phoneNumber,
       countryCode = mUserProfile?.phone?.countryCode,
       localId = mUserProfile?.id!!,
-      credifyId = mCredifyId,
-      productTypes = toArrayList(productTypes)
+      credifyId = mUserProfile?.credifyId,
+      productTypes = Parser.toArrayList(productTypes)
     )
 
     CredifySDK.instance.offerApi.getOfferList(
@@ -182,9 +146,9 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
       ),
       email = userDict.getString("email") ?: "",
       dob = null,
-      address = null
+      address = null,
+      credifyId = userDict.getString("credify_id"),
     )
-    mCredifyId = userDict.getString("credify_id")
   }
 
   @ReactMethod
@@ -198,82 +162,66 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
     return mOfferList?.offerList?.single { it.id == id }
   }
 
-  private fun sendEvent(
-    eventName: String,
-    @Nullable params: WritableMap
-  ) {
-    this.reactApplicationContext
-      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-      .emit(eventName, params)
-  }
-
   @ReactMethod
-  fun showOfferDetail(offerId: String, pushClaimCB: Callback) {
-    val _offer = getOffer(offerId)
-    Log.d("CredifySDK", "OFFER ID = " + _offer?.id)
-    Log.d("CredifySDK", "mCredifyId = " + mCredifyId)
-    Log.d("CredifySDK", "mUserProfile ID = " + mUserProfile?.id?.toString())
+  fun showOfferDetail(offerId: String) {
+    val context = currentActivity ?: return
+    val offer = getOffer(offerId) ?: return
+    val userProfile = mUserProfile ?: return
+    Log.d("CredifySDK", "OFFER ID = " + offer.id)
+    Log.d("CredifySDK", "mCredifyId = " + mUserProfile?.credifyId)
+    Log.d("CredifySDK", "mUserProfile ID = " + mUserProfile?.id)
 
     CredifySDK.instance.offerApi.showOffer(
-      context = this.currentActivity!!,
-      offer = _offer!!,
-      userProfile = mUserProfile!!,
-      credifyId = mCredifyId,
-      marketName = mMarketName,
+      context = context,
+      offer = offer,
+      userProfile = userProfile,
       pushClaimCallback = object : CredifySDK.PushClaimCallback {
         override fun onPushClaim(
           credifyId: String,
-          user: UserProfile,
           resultCallback: CredifySDK.PushClaimResultCallback
         ) {
           mPushClaimResultCallback = resultCallback
-          pushClaimCB.invoke(mUserProfile?.id, credifyId)
+          sendPushClaimTokenEvent(localId = userProfile.id, credifyId = credifyId)
         }
       },
       offerPageCallback = object : CredifySDK.OfferPageCallback {
         override fun onClose(status: RedemptionResult) {
-          Log.d("CredifySDK", "Redemtion Status is " + status.name)
-          val params = Arguments.createMap();
-          params.putString("status", status.name);
-          sendEvent("onRedeemCompleted", params);
+          Log.d("CredifySDK", "Redemption Status is " + status.name)
+          sendRedeemedOfferEvent(status = status)
+          sendCompletionEvent()
+        }
+
+        override fun onOpenUrl(url: String) {
+
         }
       }
     )
   }
 
   @ReactMethod
-  fun showPassport(dismissCB: Callback) {
-    CredifySDK.instance.offerApi.showPassport(
-      this.currentActivity!!,
-      userProfile = mUserProfile!!,
+  fun showPassport() {
+    val context = currentActivity ?: return
+    val userProfile = mUserProfile ?: return
+
+    CredifySDK.instance.passportApi.showPassport(
+      context = context,
+      userProfile = userProfile,
+      pushClaimCallback = object : CredifySDK.PushClaimCallback {
+        override fun onPushClaim(
+          credifyId: String,
+          resultCallback: CredifySDK.PushClaimResultCallback
+        ) {
+          mPushClaimResultCallback = resultCallback
+          sendPushClaimTokenEvent(userProfile.id, credifyId)
+        }
+      },
       callback = object : CredifySDK.PassportPageCallback {
         override fun onShow() {
 
         }
 
         override fun onClose() {
-          dismissCB.invoke()
-        }
-      })
-  }
-
-  @ReactMethod
-  fun showReferral() {
-    CredifySDK.instance.referralApi.showReferralResult(
-      context = this.currentActivity!!,
-      userProfile = mUserProfile!!,
-      marketName = mMarketName,
-      callback = object : CredifySDK.OnShowReferralResultCallback {
-        override fun onShow() {
-          Log.d("CredifySDK", "Referral page on Show")
-        }
-
-        override fun onError(ex: Exception) {
-          Log.d("CredifySDK", "Referral page Error" + ex.message)
-        }
-
-        override fun onClose() {
-          Log.d("CredifySDK", "Referral page is close")
+          sendCompletionEvent()
         }
       }
     )
