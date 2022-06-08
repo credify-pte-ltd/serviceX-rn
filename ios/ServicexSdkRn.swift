@@ -25,6 +25,17 @@ class ServicexSdkRn: RCTEventEmitter {
         }
     }
     
+    private func createEventPayload(type: String, payload: [String : Any?]) -> [String : Any?] {
+        return [
+            "type": type,
+            "payload": payload
+        ]
+    }
+    
+    private func sendEvent(payload: [String : Any?]) {
+        self.sendEvent(withName: self.nativeEvent, body: payload)
+    }
+    
     private func sendPushClaimTokenEvent(localId: String, credifyId: String) {
         let payload = self.createEventPayload(
             type: EventType.pushClaimToken.rawValue,
@@ -33,7 +44,7 @@ class ServicexSdkRn: RCTEventEmitter {
                 "credifyId": credifyId
             ]
         )
-        self.sendEvent(withName: self.nativeEvent, body: payload)
+        self.sendEvent(payload: payload)
     }
     
     private func sendRedeemedOfferEvent(status: String?) {
@@ -43,7 +54,7 @@ class ServicexSdkRn: RCTEventEmitter {
                 "status": status
             ]
         )
-        self.sendEvent(withName: self.nativeEvent, body: payload)
+        self.sendEvent(payload: payload)
     }
     
     private func sendCompletionEvent() {
@@ -51,7 +62,7 @@ class ServicexSdkRn: RCTEventEmitter {
             type: EventType.completion.rawValue,
             payload: [:]
         )
-        self.sendEvent(withName: self.nativeEvent, body: payload)
+        self.sendEvent(payload: payload)
     }
     
     @objc(initialize:environment:marketName:packageVersion:theme:)
@@ -156,7 +167,7 @@ class ServicexSdkRn: RCTEventEmitter {
     }
     
     @objc override func supportedEvents() -> [String]! {
-        return ["nativeEvent"]
+        return [nativeEvent]
     }
     
     @objc(setUserProfile:)
@@ -202,11 +213,6 @@ class ServicexSdkRn: RCTEventEmitter {
             }
         }
     }
-
-    @objc(clearCache)
-    func clearCache(){
-        //serviceX.resetSession()
-    }
         
     @objc(setPushClaimRequestStatus:)
     func setPushClaimRequestStatus(isSuccess: Bool){
@@ -228,13 +234,6 @@ class ServicexSdkRn: RCTEventEmitter {
             return "unknown"
             
         }
-    }
-    
-    func createEventPayload(type: String, payload: [String : Any?]) -> [String : Any?] {
-        return [
-            "type": type,
-            "payload": payload
-        ]
     }
     
     @objc(showOfferDetail:)
