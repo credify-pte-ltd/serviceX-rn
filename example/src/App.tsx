@@ -44,7 +44,6 @@ export default function App() {
     if (!user) {
       return;
     }
-    serviceX.clearCache();
     showLoading(true);
     try {
       const res = await serviceX.getOffers();
