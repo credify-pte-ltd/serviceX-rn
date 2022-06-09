@@ -174,10 +174,22 @@ serviceX.showOfferDetail(
 );
 
 //** Show Credify passport page for user to login to see the offers's status
-serviceX.showPassport(() => {
-  //** This callback is for dismiss action (user closes the passport window)
-  console.log('passport is dismissed');
-});
+serviceX.showPassport(
+  async (localId: string, credifyId: string) => {
+    //** You need to add your push claim request in this callback and tell the SDK for the result
+    try {
+      const res = await pushClaim(localId, credifyId);
+      console.log({ res });
+      serviceX.setPushClaimRequestStatus(true);
+    } catch (error) {
+      serviceX.setPushClaimRequestStatus(false);
+    }
+  },
+  () => {
+    //** This callback is for dismiss action (user closes the passport window)
+    console.log('passport is dismissed');
+  }
+)
 ```
 
 > **Important**: In the first callback of the `serviceX.showOfferDetail`, you need to keep `credifyId` on your side. You have to send the `credifyId` to Credify SDK when you use the methods that require `credifyId`. E.g: `serviceX.setUserProfile`. You have to use `serviceX.setUserProfile` to update `credifyId` as soon as possible.
