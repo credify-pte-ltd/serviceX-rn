@@ -148,7 +148,7 @@ class ServicexSdkRn: RCTEventEmitter {
         if let id = v["id"] as? Int {
             let firstName = v["first_name"] as? String ?? ""
             let lastName =  v["last_name"] as? String ?? ""
-            let fullName =  v["full_name"] as? String ?? ""
+            let fullName =  v["full_name"] as? String
             let email = v["email"] as? String ?? ""
             let credifyId = v["credify_id"] as? String
             let phoneNumber = v["phone_number"] as? String
@@ -283,6 +283,50 @@ class ServicexSdkRn: RCTEventEmitter {
         }
     }
     
+    @objc(showPromotionOffers)
+    func showPromotionOffers() {
+        guard let ui = userInput else {
+            print("User input was not found")
+            return
+        }
+        guard let user = self.parseUserProfile(value: ui) else {
+            print("User was not found")
+            return
+        }
+
+        let offers = self.listOffer
+
+        if offers.isEmpty {
+            print("Offers is empty")
+            return
+        }
+
+        DispatchQueue.main.async {
+            guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
+                print("There is no view controller")
+                return
+            }
+
+            let task: ((String, ((Bool) -> Void)?) -> Void) = { credifyId, result in
+                self.sendPushClaimTokenEvent(localId: user.id, credifyId: credifyId)
+                self.pushClaimResponseCallback = result
+            }
+
+            if let offerIns = self.offerIns as? serviceX.Offer
+            {
+                offerIns.presentPromotionOffersModally(
+                    from: vc,
+                    offers: offers,
+                    userProfile: user,
+                    pushClaimTokensTask: task
+                ) { [weak self] result in
+                    self?.sendRedeemedOfferEvent(status: self?.redemptionResultString(type: result))
+                    self?.sendCompletionEvent()
+                }
+            }
+        }
+    }
+    
     @objc(showPassport)
     func showPassport(){
         guard let ui = userInput else {
@@ -308,6 +352,37 @@ class ServicexSdkRn: RCTEventEmitter {
             if let passportIns = self.passportIns as? serviceX.Passport
             {
                 passportIns.showMypage(from: vc, user: user, pushClaimTokensTask: task) {
+                    self.sendCompletionEvent()
+                }
+            }
+        }
+    }
+    
+    @objc(showServiceInstance:productTypes:)
+    func showServiceInstance(marketId: String, productTypes: NSArray){
+        guard let ui = userInput else {
+            print("User input was not found")
+            return
+        }
+        guard let user = self.parseUserProfile(value: ui) else {
+            print("User was not found")
+            return
+        }
+
+        guard let _productTypes = productTypes.map({item in ProductType.init(rawValue: item as! String)}) as? [ProductType] else {
+            print("Product type is not correct")
+            return
+        }
+
+        DispatchQueue.main.async {
+            guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
+                print("There is no view controller")
+                return
+            }
+
+            if let passportIns = self.passportIns as? serviceX.Passport
+            {
+                passportIns.showDetail(from: vc, user: user, marketId: marketId, productTypes: _productTypes) {
                     self.sendCompletionEvent()
                 }
             }

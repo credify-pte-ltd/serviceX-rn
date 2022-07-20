@@ -26,6 +26,16 @@ enum EventType {
   PUSH_CLAIM_TOKEN = 'pushClaimToken',
 }
 
+export enum ProductType {
+  // Insurance
+  INSURANCE = 'insurance',
+  HEALTH_INSURANCE = 'health-insurance',
+  AUTO_MOBILE_INSURANCE = 'automobile-insurance',
+  HOME_INSURANCE = 'home-insurance',
+  // BNPL
+  BNPL_CONSUMER = 'consumer-financing:unsecured-loan:bnpl',
+}
+
 type OfferListRes = {
   credifyId: string;
   offerList: OfferData[];
@@ -49,10 +59,12 @@ type ServicexSdkRnType = {
   ): void;
   getOfferList(productTypes: string[]): Promise<string>;
   showOfferDetail(id: string): void;
+  showPromotionOffers(): void;
   setUserProfile(payload: UserPayload): void;
   setPushClaimRequestStatus(isSuccess: boolean): void;
   clearCache(): void;
   showPassport(): void;
+  showServiceInstance(marketId: string, productTypes: ProductType[]): void;
 };
 
 const ServicexSdkNative = NativeModules.ServicexSdkRn as ServicexSdkRnType;
@@ -144,6 +156,21 @@ export function showOfferDetail(
 }
 
 /**
+ * Begin redemption flow
+ * @param pushClaimCB - The callback for organization to push their user's claim token
+ * @param redemptionCB - The callback notifies that the page is closed
+ */
+export function showPromotionOffers(
+  pushClaimCB: PushClaimCB,
+  redemptionCB?: RedemptionCB
+) {
+  _pushClaimCB = pushClaimCB;
+  _redemptionCB = redemptionCB;
+
+  ServicexSdkNative.showPromotionOffers();
+}
+
+/**
  * Set user info that need in other APIs such as showOfferDetail, getOffers, showPassport...
  * @param userProfile - user profile
  */
@@ -169,6 +196,21 @@ export function showPassport(pushClaimCB: PushClaimCB, dismissCB: DismissCB) {
   _dismissCB = dismissCB;
 
   ServicexSdkNative.showPassport();
+}
+
+/**
+ * Show Service detail page for user
+ * @param marketId - Your organization that has registered with Credify
+ * @param productTypes - product type list
+ */
+export function showServiceInstance(
+  marketId: string,
+  productTypes: ProductType[],
+  dismissCB: DismissCB
+) {
+  _dismissCB = dismissCB;
+
+  ServicexSdkNative.showServiceInstance(marketId, productTypes);
 }
 
 /**
@@ -198,10 +240,12 @@ const serviceX = {
   initialize,
   getOffers,
   showOfferDetail,
+  showPromotionOffers,
   setUserProfile,
   setPushClaimRequestStatus,
   clearCache,
   showPassport,
+  showServiceInstance,
 };
 
 export default serviceX;

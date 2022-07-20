@@ -9,6 +9,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.google.gson.Gson
 import com.servicexsdkrn.util.Parser
 import one.credify.sdk.*
+import java.lang.Exception
 import kotlin.collections.ArrayList
 
 class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
@@ -199,6 +200,44 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
+  fun showPromotionOffers() {
+    val context = currentActivity ?: return
+    val offers = mOfferList?.offerList ?: return
+    val userProfile = mUserProfile ?: return
+
+    if (offers.isEmpty())
+      return
+
+    currentActivity?.runOnUiThread {
+      CredifySDK.instance.offerApi.showPromotionOffers(
+        context = context,
+        offers = offers,
+        userProfile = userProfile,
+        pushClaimCallback = object : CredifySDK.PushClaimCallback {
+          override fun onPushClaim(
+            credifyId: String,
+            resultCallback: CredifySDK.PushClaimResultCallback
+          ) {
+            mPushClaimResultCallback = resultCallback
+            sendPushClaimTokenEvent(localId = userProfile.id, credifyId = credifyId)
+          }
+        },
+        offerPageCallback = object : CredifySDK.OfferPageCallback {
+          override fun onClose(status: RedemptionResult) {
+            Log.d("CredifySDK", "Redemption Status is " + status.name)
+            sendRedeemedOfferEvent(status = status)
+            sendCompletionEvent()
+          }
+
+          override fun onOpenUrl(url: String) {
+
+          }
+        }
+      )
+    }
+  }
+
+  @ReactMethod
   fun showPassport() {
     val context = currentActivity ?: return
     val userProfile = mUserProfile ?: return
@@ -215,6 +254,35 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
           sendPushClaimTokenEvent(userProfile.id, credifyId)
         }
       },
+      callback = object : CredifySDK.PassportPageCallback {
+        override fun onShow() {
+
+        }
+
+        override fun onClose() {
+          sendCompletionEvent()
+        }
+      }
+    )
+  }
+
+  @ReactMethod
+  fun showServiceInstance(marketId: String, productTypes: ReadableArray) {
+    val context = currentActivity ?: return
+    val userProfile = mUserProfile ?: return
+
+    val types = ArrayList<ProductType>()
+    Parser.toArrayList(productTypes).forEach { strValue ->
+      ProductType.values().find { it.value == strValue }?.run {
+        types.add(this)
+      }
+    }
+
+    CredifySDK.instance.passportApi.showServiceInstance(
+      context = context,
+      userProfile = userProfile,
+      marketId = marketId,
+      productTypeList = types,
       callback = object : CredifySDK.PassportPageCallback {
         override fun onShow() {
 
