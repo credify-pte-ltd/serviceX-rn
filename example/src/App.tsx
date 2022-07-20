@@ -13,7 +13,7 @@ import {
   TextInput,
   SafeAreaView,
 } from 'react-native';
-import serviceX, { OfferData, RedemptionStatus } from 'servicex-rn';
+import serviceX, { OfferData, ProductType, RedemptionStatus } from 'servicex-rn';
 
 const API_KEY =
   '7kx6vx9p9gZmqrtvHjRTOiSXMkAfZB3s5u3yjLehQHQCtjWrjAk9XlQHR2IOqpuR';
@@ -23,6 +23,7 @@ const PUSH_CLAIM_URL =
 const DEMO_USER_URL =
   'https://sandbox-demo-api.credify.dev/housecare/demo-user';
 const MARKET_NAME = 'housecare';
+const MARKET_ID = '039f059a-3d58-4592-b359-834f5fe9a442';
 
 export default function App() {
   const [user, setUser] = useState<any>(null);
@@ -69,6 +70,29 @@ export default function App() {
       },
       () => {
         console.log('passport is dismissed');
+      }
+    );
+  }
+
+  function showServiceDetailHandler() {
+    serviceX.showServiceInstance(MARKET_ID, [ProductType.BNPL_CONSUMER], () => {
+      console.log('Service detail is dismissed');
+    });
+  }
+
+  function showPromotionOffersHandler() {
+    serviceX.showPromotionOffers(
+      async (localId: string, credifyId: string) => {
+        try {
+          const res = await pushClaim(localId, credifyId);
+          console.log({ res });
+          serviceX.setPushClaimRequestStatus(true);
+        } catch (error) {
+          serviceX.setPushClaimRequestStatus(false);
+        }
+      },
+      () => {
+        console.log('Promotion offer is dismissed');
       }
     );
   }
@@ -170,8 +194,22 @@ export default function App() {
 
       <View style={{ marginTop: 10 }} />
       <Button
+        onPress={showPromotionOffersHandler}
+        title="Show Promotion Offers"
+        color="#841584"
+      />
+
+      <View style={{ marginTop: 10 }} />
+      <Button
         onPress={showPassportHandler}
         title="Show Passport"
+        color="#841584"
+      />
+
+      <View style={{ marginTop: 10 }} />
+      <Button
+        onPress={showServiceDetailHandler}
+        title="Show Service Detail"
         color="#841584"
       />
 

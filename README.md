@@ -173,6 +173,22 @@ serviceX.showOfferDetail(
   }
 );
 
+//** Start to show promotion offers
+serviceX.showPromotionOffers(
+  async (localId: string, credifyId: string) => {
+    //** You need to add your push claim request in this callback and tell the SDK for the result
+    try {
+      const res = await pushClaim(localId, credifyId);
+      serviceX.setPushClaimRequestStatus(true);
+    } catch (error) {
+      serviceX.setPushClaimRequestStatus(false);
+    }
+  },
+  () => {
+    console.log('Promotion offer is dismissed');
+  }
+);
+
 //** Show Credify passport page for user to login to see the offers's status
 serviceX.showPassport(
   async (localId: string, credifyId: string) => {
@@ -190,6 +206,12 @@ serviceX.showPassport(
     console.log('passport is dismissed');
   }
 )
+
+//** Show the Service Detail page. It will show all the BNPL details which the user has used.
+// MARKET_ID: Your orgnization id that you have registered with Credify
+serviceX.showServiceInstance(MARKET_ID, [ProductType.BNPL_CONSUMER], () => {
+  console.log('Service detail is dismissed');
+});
 ```
 
 > **Important**: In the first callback of the `serviceX.showOfferDetail`, you need to keep `credifyId` on your side. You have to send the `credifyId` to Credify SDK when you use the methods that require `credifyId`. E.g: `serviceX.setUserProfile`. You have to use `serviceX.setUserProfile` to update `credifyId` as soon as possible.
