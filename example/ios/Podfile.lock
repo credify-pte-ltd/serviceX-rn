@@ -1,7 +1,7 @@
 PODS:
   - Alamofire (5.6.2)
   - boost-for-react-native (1.63.0)
-  - Credify (0.6.0):
+  - Credify (0.7.0):
     - Alamofire (~> 5.4)
     - lottie-ios (= 3.1.9)
     - SDWebImage (= 5.0.0)
@@ -254,8 +254,8 @@ PODS:
   - SDWebImage (5.0.0):
     - SDWebImage/Core (= 5.0.0)
   - SDWebImage/Core (5.0.0)
-  - servicex-rn (0.14.0):
-    - Credify (= 0.6.0)
+  - servicex-rn (0.15.0):
+    - Credify (= 0.7.0)
     - React-Core
   - Yoga (1.14.0)
 
@@ -357,7 +357,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Alamofire: d368e1ff8a298e6dde360e35a3e68e6c610e7204
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  Credify: e494ec3a631f6c693fe20ded4bc5682d3370a713
+  Credify: f155c26ac4fb9ed0254af4d214310681febb05cc
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
@@ -385,7 +385,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   SDWebImage: 5de80a0302de9e377e62f47d2fa1304efff0e55f
-  servicex-rn: d133110e3c8d3ff1df7301c9db2ca923a1153e38
+  servicex-rn: b059ed890f1e7c70279e02da2f38377c6e23aa34
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
 PODFILE CHECKSUM: a8db059ed91cbe37980284350cd135f44ee3887a
