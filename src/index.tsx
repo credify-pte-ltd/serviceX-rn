@@ -1,10 +1,8 @@
-import {
-  NativeEventEmitter,
-  NativeModules,
-} from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
 import type { components } from '@credify/api-docs';
 import packageJson from '../package.json';
 import { camelize } from './utils';
+import type { serviceXThemeConfig } from './theme';
 
 type PushClaimCB = (localId: string, credifyId: string) => void;
 
@@ -55,7 +53,7 @@ type ServicexSdkRnType = {
     environment: string,
     marketName: string,
     packageVersion: string,
-    theme?: ThemeCustomizePayload
+    theme?: serviceXThemeConfig
   ): void;
   getOfferList(productTypes: string[]): Promise<string>;
   showOfferDetail(id: string): void;
