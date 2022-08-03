@@ -79,46 +79,47 @@ class ServicexSdkRn: RCTEventEmitter {
     
     func parseThemeObject(value:NSDictionary) -> serviceXTheme? {
         guard let v = value as? [String:Any] else { return nil }
+        let color = v["color"] as? [String:Any]
+        let font = v["font"] as? [String:Any]
+        
         // Color theme:
-        let primaryBrandyStart = v["primaryBrandyStart"] as? String
-        let primaryBrandyEnd =  v["primaryBrandyEnd"] as? String
-        let primaryText = v["primaryText"] as? String
-        let secondaryActive = v["secondaryActive"] as? String
-        let secondaryDisable = v["secondaryDisable"] as? String
-        let secondaryText = v["secondaryText"] as? String
-        let secondaryComponentBackground = v["secondaryComponentBackground"] as? String
-        let secondaryBackground = v["secondaryBackground"] as? String
-        let primaryButtonTextColor = v["primaryButtonTextColor"] as? String
-        let primaryButtonBrandyStart = v["primaryButtonBrandyStart"] as? String
-        let primaryButtonBrandyEnd = v["primaryButtonBrandyEnd"] as? String
+        let primaryBrandyStart = color?["primaryBrandyStart"] as? String
+        let primaryBrandyEnd =  color?["primaryBrandyEnd"] as? String
+        let primaryText = color?["primaryText"] as? String
+        let secondaryActive = color?["secondaryActive"] as? String
+        let secondaryDisable = color?["secondaryDisable"] as? String
+        let secondaryText = color?["secondaryText"] as? String
+        let secondaryComponentBackground = color?["secondaryComponentBackground"] as? String
+        let secondaryBackground = color?["secondaryBackground"] as? String
+        let primaryButtonTextColor = color?["primaryButtonTextColor"] as? String
+        let primaryButtonBrandyStart = color?["primaryButtonBrandyStart"] as? String
+        let primaryButtonBrandyEnd = color?["primaryButtonBrandyEnd"] as? String
         
         // Font theme:
-        let primaryFontFamily = v["primaryFontFamily"] as? String
-        let secondaryFontFamily =  v["secondaryFontFamily"] as? String
-        let bigTitleFontSize = v["bigTitleFontSize"] as? Int ?? serviceXTheme.default.font.bigTitleFontSize
-        let bigTitleFontLineHeight = v["bigTitleFontLineHeight"] as? Int ?? serviceXTheme.default.font.bigTitleFontLineHeight
-        let modelTitleFontSize = v["modelTitleFontSize"] as? Int ?? serviceXTheme.default.font.modelTitleFontSize
-        let modelTitleFontLineHeight = v["modelTitleFontLineHeight"] as? Int ?? serviceXTheme.default.font.modelTitleFontLineHeight
-        let sectionTitleFontSize = v["sectionTitleFontSize"] as? Int ?? serviceXTheme.default.font.sectionTitleFontSize
-        let sectionTitleFontLineHeight = v["sectionTitleFontLineHeight"] as? Int ?? serviceXTheme.default.font.sectionTitleFontLineHeight
-        let bigFontSize = v["bigFontSize"] as? Int ?? serviceXTheme.default.font.bigFontSize
-        let bigFontLineHeight = v["bigFontLineHeight"] as? Int ?? serviceXTheme.default.font.bigFontLineHeight
-        let normalFontSize = v["normalFontSize"] as? Int ?? serviceXTheme.default.font.normalFontSize
-        let normalFontLineHeight = v["normalFontLineHeight"] as? Int ?? serviceXTheme.default.font.normalFontLineHeight
-        let smallFontSize = v["smallFontSize"] as? Int ?? serviceXTheme.default.font.smallFontSize
-        let smallFontLineHeight = v["smallFontLineHeight"] as? Int ?? serviceXTheme.default.font.smallFontLineHeight
-        let boldFontSize = v["boldFontSize"] as? Int ?? serviceXTheme.default.font.boldFontSize
-        let boldFontLineHeight = v["smallFontLineHeight"] as? Int ?? serviceXTheme.default.font.boldFontLineHeight
-       
-        
+        let primaryFontFamily = font?["primaryFontFamily"] as? String ?? ThemeFont.default.primaryFontFamily
+        let secondaryFontFamily = font?["secondaryFontFamily"] as? String ?? ThemeFont.default.secondaryFontFamily
+        let bigTitleFontSize = font?["bigTitleFontSize"] as? Int ?? serviceXTheme.default.font.bigTitleFontSize
+        let bigTitleFontLineHeight = font?["bigTitleFontLineHeight"] as? Int ?? serviceXTheme.default.font.bigTitleFontLineHeight
+        let modelTitleFontSize = font?["modelTitleFontSize"] as? Int ?? serviceXTheme.default.font.modelTitleFontSize
+        let modelTitleFontLineHeight = font?["modelTitleFontLineHeight"] as? Int ?? serviceXTheme.default.font.modelTitleFontLineHeight
+        let sectionTitleFontSize = font?["sectionTitleFontSize"] as? Int ?? serviceXTheme.default.font.sectionTitleFontSize
+        let sectionTitleFontLineHeight = font?["sectionTitleFontLineHeight"] as? Int ?? serviceXTheme.default.font.sectionTitleFontLineHeight
+        let bigFontSize = font?["bigFontSize"] as? Int ?? serviceXTheme.default.font.bigFontSize
+        let bigFontLineHeight = font?["bigFontLineHeight"] as? Int ?? serviceXTheme.default.font.bigFontLineHeight
+        let normalFontSize = font?["normalFontSize"] as? Int ?? serviceXTheme.default.font.normalFontSize
+        let normalFontLineHeight = font?["normalFontLineHeight"] as? Int ?? serviceXTheme.default.font.normalFontLineHeight
+        let smallFontSize = font?["smallFontSize"] as? Int ?? serviceXTheme.default.font.smallFontSize
+        let smallFontLineHeight = font?["smallFontLineHeight"] as? Int ?? serviceXTheme.default.font.smallFontLineHeight
+        let boldFontSize = font?["boldFontSize"] as? Int ?? serviceXTheme.default.font.boldFontSize
+        let boldFontLineHeight = font?["smallFontLineHeight"] as? Int ?? serviceXTheme.default.font.boldFontLineHeight
         
         // Overall
         let inputFieldRadius = v["inputFieldRadius"] as? Double ?? serviceXTheme.default.inputFieldRadius
         let modelRadius = v["modelRadius"] as? Double ?? serviceXTheme.default.modalRadius
         let buttonRadius = v["buttonRadius"] as? Double ?? serviceXTheme.default.buttonRadius
-        let boxShadow = v["boxShadow"] as? String
+        let boxShadow = v["boxShadow"] as? String ?? serviceXTheme.default.boxShadow
         
-        let color = ThemeColor(primaryBrandyStart: primaryBrandyStart ?? ThemeColor.default.primaryBrandyStart,
+        let themeColor = ThemeColor(primaryBrandyStart: primaryBrandyStart ?? ThemeColor.default.primaryBrandyStart,
                                primaryBrandyEnd: primaryBrandyEnd ?? ThemeColor.default.primaryBrandyEnd,
                                primaryText: primaryText ?? ThemeColor.default.primaryText,
                                secondaryActive: secondaryActive ?? ThemeColor.default.secondaryActive,
@@ -132,14 +133,31 @@ class ServicexSdkRn: RCTEventEmitter {
                                
         )
         
-        let font = ThemeFont(primaryFontFamily: primaryFontFamily ?? ThemeFont.default.primaryFontFamily, secondaryFontFamily: secondaryFontFamily ?? ThemeFont.default.secondaryFontFamily, bigTitleFontSize: bigTitleFontSize, bigTitleFontLineHeight: bigTitleFontLineHeight, modelTitleFontSize: modelTitleFontSize, modelTitleFontLineHeight: modelTitleFontLineHeight, sectionTitleFontSize: sectionTitleFontSize, sectionTitleFontLineHeight: sectionTitleFontLineHeight, bigFontSize: bigFontSize, bigFontLineHeight: bigFontLineHeight, normalFontSize: normalFontSize, normalFontLineHeight: normalFontLineHeight, smallFontSize: smallFontSize, smallFontLineHeight: smallFontLineHeight, boldFontSize: boldFontSize, boldFontLineHeight: boldFontLineHeight)
+        let themeFont = ThemeFont(
+            primaryFontFamily: primaryFontFamily,
+            secondaryFontFamily: secondaryFontFamily,
+            bigTitleFontSize: bigTitleFontSize,
+            bigTitleFontLineHeight: bigTitleFontLineHeight,
+            modelTitleFontSize: modelTitleFontSize,
+            modelTitleFontLineHeight: modelTitleFontLineHeight,
+            sectionTitleFontSize: sectionTitleFontSize,
+            sectionTitleFontLineHeight: sectionTitleFontLineHeight,
+            bigFontSize: bigFontSize,
+            bigFontLineHeight: bigFontLineHeight,
+            normalFontSize: normalFontSize,
+            normalFontLineHeight: normalFontLineHeight,
+            smallFontSize: smallFontSize,
+            smallFontLineHeight: smallFontLineHeight,
+            boldFontSize: boldFontSize,
+            boldFontLineHeight: boldFontLineHeight
+        )
         
-        let theme = serviceXTheme(color: color,
-                                  font: font,
+        let theme = serviceXTheme(color: themeColor,
+                                  font: themeFont,
                                   inputFieldRadius: inputFieldRadius,
                                   modelRadius: modelRadius,
                                   buttonRadius: buttonRadius,
-                                  boxShadow: boxShadow ?? serviceXTheme.default.boxShadow)
+                                  boxShadow: boxShadow)
         return theme
     }
     

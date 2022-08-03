@@ -13,7 +13,12 @@ import {
   TextInput,
   SafeAreaView,
 } from 'react-native';
-import serviceX, { OfferData, ProductType, RedemptionStatus } from 'servicex-rn';
+import serviceX, {
+  OfferData,
+  ProductType,
+  RedemptionStatus,
+} from 'servicex-rn';
+import type { serviceXThemeConfig } from '../../src/theme';
 
 const API_KEY =
   '7kx6vx9p9gZmqrtvHjRTOiSXMkAfZB3s5u3yjLehQHQCtjWrjAk9XlQHR2IOqpuR';
@@ -31,12 +36,53 @@ export default function App() {
   const [offersData, setOffers] = useState<OfferData[]>([]);
   const [isLoading, showLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const customTheme = {
-      primaryBrandyStart: '#fc030b',
-      primaryBrandyEnd: '#0066ff',
-    };
+  const customTheme: serviceXThemeConfig = {
+    color: {
+      primaryBrandyStart: '#87E4E4',
+      primaryBrandyEnd: '#87E4E4',
+      primaryButtonBrandyStart: '#ED7C5C',
+      primaryButtonBrandyEnd: '#F3B270',
+      primaryText: '#222D41',
+      secondaryText: '#999999',
+      secondaryBackground: '#FFFFFF',
+      secondaryComponentBackground: '#EFF5FF',
+      primaryWhite: '#FFFFFF',
+      secondaryActive: '#87E4E4',
+      secondaryDisable: '#E0E0E0',
+      primaryButtonTextColor: '#FFFFFF',
+      topBarTextColor: '#FFFFFF',
+    },
+    font: {
+      primaryFontFamily: 'Inter',
+      secondaryFontFamily: 'Inter',
+      bigTitleFontSize: 21,
+      bigTitleFontLineHeight: 37,
+      pageHeaderFontSize: 21,
+      pageHeaderLineHeight: 31,
+      modelTitleFontSize: 20,
+      modelTitleFontLineHeight: 29,
+      sectionTitleFontSize: 16,
+      sectionTitleFontLineHeight: 24,
+      sectionTitleSmallFontSize: 14,
+      sectionTitleSmallFontLineHeight: 21,
+      buttonFontSize: 17,
+      buttonFontLineHeight: 25,
+      bigFontSize: 18,
+      bigFontLineHeight: 26,
+      normalFontSize: 14,
+      normalFontLineHeight: 18,
+      smallFontSize: 14,
+      smallFontLineHeight: 20,
+      boldFontSize: 15,
+      boldFontLineHeight: 21,
+    },
+    inputFieldRadius: 10,
+    modelRadius: 10,
+    buttonRadius: 50,
+    boxShadow: '0px 4px 30px rgba(0, 0, 0, 0.1)',
+  };
 
+  useEffect(() => {
     serviceX.initialize(API_KEY, ENV, MARKET_NAME, customTheme);
     getDemoUsers();
   }, []);
