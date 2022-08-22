@@ -5,6 +5,7 @@ class ServicexSdkRn: RCTEventEmitter {
     
     private var offerIns: Any?
     private var passportIns: Any?
+    private var bnplIns: Any?
     var listOffer: [OfferData] = [OfferData]()
     var userInput: NSDictionary?
     var pushClaimResponseCallback: ((Bool) -> Void)?
@@ -15,6 +16,7 @@ class ServicexSdkRn: RCTEventEmitter {
         case completion
         case redeemCompleted
         case pushClaimToken
+        case bnplRedeemCompleted
     }
     
     class UnmanagedError : Error {
@@ -57,6 +59,18 @@ class ServicexSdkRn: RCTEventEmitter {
         self.sendEvent(payload: payload)
     }
     
+    private func sendBNPLRedeemedOfferEvent(status: String?, orderId: String, isPaymentCompleted: Bool) {
+        let payload = self.createEventPayload(
+            type: EventType.bnplRedeemCompleted.rawValue,
+            payload: [
+                "status": status,
+                "orderId": orderId,
+                "isPaymentCompleted": isPaymentCompleted,
+            ]
+        )
+        self.sendEvent(payload: payload)
+    }
+    
     private func sendCompletionEvent() {
         let payload = self.createEventPayload(
             type: EventType.completion.rawValue,
@@ -65,15 +79,22 @@ class ServicexSdkRn: RCTEventEmitter {
         self.sendEvent(payload: payload)
     }
     
-    @objc(initialize:environment:marketName:packageVersion:theme:)
-    func initialize(apiKey:String, environment: String, marketName: String, packageVersion: String,theme: NSDictionary) -> Void {
-        
+    @objc(initialize:marketId:environment:marketName:packageVersion:theme:)
+    func initialize(
+        apiKey:String,
+        marketId: String,
+        environment: String,
+        marketName: String,
+        packageVersion: String,
+        theme: NSDictionary
+    ) -> Void {
         passportIns = serviceX.Passport()
         offerIns = serviceX.Offer()
+        bnplIns = serviceX.BNPL()
         
         let envDict = ["DEV": CredifyEnvs.dev, "PRODUCTION": .production,"SANDBOX":  .sandbox,"SIT": .sit,"UAT": .uat]
         let themeData = parseThemeObject(value: theme)
-        let config = serviceXConfig(apiKey: apiKey, env: envDict[environment]!, appName: marketName, theme: themeData ?? serviceXTheme.default, userAgent: "servicex/rn/ios/\(packageVersion)")
+        let config = serviceXConfig(apiKey: apiKey, marketId: marketId, env: envDict[environment]!, appName: marketName, theme: themeData ?? serviceXTheme.default, userAgent: "servicex/rn/ios/\(packageVersion)")
         serviceX.configure(config)
     }
     
@@ -184,6 +205,20 @@ class ServicexSdkRn: RCTEventEmitter {
         return nil
     }
     
+    func parseOrderInfo(value:NSDictionary) -> OrderInfo? {
+        guard let v = value as? [String:Any] else { return nil }
+        if let orderId = v["orderId"] as? String, let orderAmountDic =  v["orderAmount"] as? [String:Any] {
+            if let value = orderAmountDic["value"] as? String, let currency = orderAmountDic["currency"] as? String, let currencyType = CurrencyType.init(rawValue: currency) {
+                return OrderInfo(
+                    orderId: orderId,
+                    orderAmount: FiatCurrency(value: value, currency: currencyType)
+                )
+            }
+        }
+        
+        return nil
+    }
+    
     @objc override func supportedEvents() -> [String]! {
         return [nativeEvent]
     }
@@ -198,6 +233,11 @@ class ServicexSdkRn: RCTEventEmitter {
         let offerList: [OfferData]
     }
     
+    struct BNPLInfoRes: Codable {
+        let isAvailable: Bool
+        let credifyId: String?
+    }
+    
     @objc(getOfferList:resolve:rejecter:)
     func getOfferList(productTypes: NSArray, resolve: @escaping(RCTPromiseResolveBlock), rejecter reject: @escaping(RCTPromiseRejectBlock)) -> Void {
         guard let ui = userInput else {
@@ -209,9 +249,17 @@ class ServicexSdkRn: RCTEventEmitter {
             return
         }
         
+        var parsedProductTypes: [ProductType] = []
+        _productTypes.forEach { item in
+            guard let type = ProductType(rawValue: item) else {
+                return
+            }
+            parsedProductTypes.append(type)
+        }
+        
         if let offerIns = offerIns as? serviceX.Offer
         {
-            offerIns.getOffers(user: user, productTypes: _productTypes) { [weak self] result in
+            offerIns.getOffers(user: user, productTypes: parsedProductTypes) { [weak self] result in
                 switch result {
                 case .success(let offerListInfo):
                     self?.listOffer = offerListInfo.offers
@@ -405,5 +453,85 @@ class ServicexSdkRn: RCTEventEmitter {
                 }
             }
         }
+    }
+    
+    @objc(getBNPLAvailability:rejecter:)
+    func getBNPLAvailability(resolve: @escaping(RCTPromiseResolveBlock), rejecter reject: @escaping(RCTPromiseRejectBlock)){
+        guard let ui = userInput else {
+            print("User input was not found")
+            return
+        }
+        guard let user = self.parseUserProfile(value: ui) else {
+            print("User was not found")
+            return
+        }
+        
+        if let bnplIns = self.bnplIns as? serviceX.BNPL {
+            bnplIns.getBNPLAvailability(user: user, completion: { result in
+                switch result {
+                case .success(let bnplInfo):
+                    let jsonEncoder = JSONEncoder()
+                    do{
+                        
+                        let jsonData = try jsonEncoder.encode(
+                            BNPLInfoRes(
+                                isAvailable: bnplInfo.available,
+                                credifyId: bnplInfo.credifyId
+                            )
+                        )
+                        let json = String(data: jsonData, encoding: .utf8)
+                        resolve(json)
+                    } catch let error as NSError {
+                        reject("CredifySDK error","parsing json error", error)
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            })
+        }
+    }
+    
+    @objc(showBNPL:)
+    func showBNPL(orderInfo: NSDictionary){
+        guard let ui = userInput else {
+            print("User input was not found")
+            return
+        }
+        guard let user = self.parseUserProfile(value: ui) else {
+            print("User was not found")
+            return
+        }
+        
+        let orderInfo = parseOrderInfo(value: orderInfo)
+        
+        let task: ((String, ((Bool) -> Void)?) -> Void) = { credifyId, result in
+            self.sendPushClaimTokenEvent(localId: user.id, credifyId: credifyId)
+            self.pushClaimResponseCallback = result
+        }
+        
+        DispatchQueue.main.async {
+            guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
+                print("There is no view controller")
+                return
+            }
+
+            if let bnplIns = self.bnplIns as? serviceX.BNPL {
+                bnplIns.presentModally(
+                    from: vc,
+                    userProfile: user,
+                    orderInfo: orderInfo!,
+                    pushClaimTokensTask: task
+                ) { [weak self] status, orderId, isPaymentCompleted  in
+                    self?.sendBNPLRedeemedOfferEvent(
+                        status: self?.redemptionResultString(type: status),
+                        orderId: orderId,
+                        isPaymentCompleted: isPaymentCompleted
+                    )
+                    self?.sendCompletionEvent()
+                }
+            }
+        }
+        
+        
     }
 }

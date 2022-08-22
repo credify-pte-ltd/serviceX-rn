@@ -8,6 +8,12 @@ type PushClaimCB = (localId: string, credifyId: string) => void;
 
 type RedemptionCB = (status: RedemptionStatus) => void;
 
+type BNPLCB = (
+  status: RedemptionStatus,
+  orderId: string,
+  isPaymentCompleted: boolean
+) => void;
+
 type DismissCB = () => void;
 
 export enum RedemptionStatus {
@@ -21,6 +27,7 @@ const NATIVE_EVENT = 'nativeEvent';
 enum EventType {
   COMPLETION = 'completion',
   REDEEM_COMPLETED = 'redeemCompleted',
+  BNPL_REDEEM_COMPLETED = 'bnplRedeemCompleted',
   PUSH_CLAIM_TOKEN = 'pushClaimToken',
 }
 
@@ -39,6 +46,27 @@ type OfferListRes = {
   offerList: OfferData[];
 };
 
+type BNPLInfo = {
+  isAvailable: boolean;
+  credifyId?: string;
+};
+
+export type OrderInfo = {
+  orderId: string;
+  orderAmount: FiatCurrency;
+};
+
+export type FiatCurrency = {
+  value: string;
+  currency: CurrencyType;
+};
+
+export enum CurrencyType {
+  VND = 'VND',
+  USD = 'USD',
+  JPY = 'JPY',
+}
+
 export type OfferData = components['OfferData'] & {
   evaluationResult?: components['EvaluationResult'];
 };
@@ -50,6 +78,7 @@ export type ThemeCustomizePayload = { [key: string]: any };
 type ServicexSdkRnType = {
   initialize(
     apiKey: string,
+    marketId: string,
     environment: string,
     marketName: string,
     packageVersion: string,
@@ -63,6 +92,8 @@ type ServicexSdkRnType = {
   clearCache(): void;
   showPassport(): void;
   showServiceInstance(marketId: string, productTypes: ProductType[]): void;
+  getBNPLAvailability(): Promise<string>;
+  showBNPL(orderInfo: OrderInfo): void;
 };
 
 const ServicexSdkNative = NativeModules.ServicexSdkRn as ServicexSdkRnType;
@@ -72,6 +103,7 @@ const eventEmitter = new NativeEventEmitter(NativeModules.ServicexSdkRn);
 let _redemptionCB: RedemptionCB | undefined;
 let _pushClaimCB: PushClaimCB | undefined;
 let _dismissCB: DismissCB | undefined;
+let _bnplCB: BNPLCB | undefined;
 
 function subscribeEvent() {
   eventEmitter.removeAllListeners(NATIVE_EVENT);
@@ -94,7 +126,7 @@ function onReceiveEvent(event: any) {
     }
     case EventType.REDEEM_COMPLETED: {
       _redemptionCB?.(
-        String(event.status).toUpperCase() as unknown as RedemptionStatus
+        String(payload.status).toUpperCase() as unknown as RedemptionStatus
       );
       break;
     }
@@ -104,6 +136,14 @@ function onReceiveEvent(event: any) {
       _dismissCB = undefined;
       _pushClaimCB = undefined;
       _redemptionCB = undefined;
+      break;
+    }
+    case EventType.BNPL_REDEEM_COMPLETED: {
+      _bnplCB?.(
+        String(payload.status).toUpperCase() as unknown as RedemptionStatus,
+        payload.orderId,
+        payload.isPaymentCompleted
+      );
       break;
     }
     default: {
@@ -118,7 +158,7 @@ function onReceiveEvent(event: any) {
  * @returns offer list response object
  */
 export async function getOffers(
-  productTypes: string[] = []
+  productTypes: ProductType[] = []
 ): Promise<OfferListRes> {
   try {
     const jsonString = await ServicexSdkNative.getOfferList(productTypes);
@@ -214,24 +254,48 @@ export function showServiceInstance(
 /**
  * Instantiates the SDK
  * @param apiKey - The org's apiKey
+ * @param marketId - The org's ID
  * @param environment - The development environment: "SANDBOX" or "PRODUCTION"
  * @param marketName - The name of the organization
+ * @param theme - It's for UI customization
  * */
 export function initialize(
   apiKey: string,
+  marketId: string,
   environment: string,
   marketName: string,
-  theme: ThemeCustomizePayload
+  theme?: ThemeCustomizePayload
 ) {
   const packageVersion = packageJson.version;
   ServicexSdkNative.initialize(
     apiKey,
+    marketId,
     environment,
     marketName,
     packageVersion,
     theme
   );
   subscribeEvent();
+}
+
+export async function getBNPLAvailability(): Promise<BNPLInfo> {
+  try {
+    const jsonString = await ServicexSdkNative.getBNPLAvailability();
+    return camelize(JSON.parse(jsonString));
+  } catch (error) {
+    throw error;
+  }
+}
+
+export function showBNPL(
+  orderInfo: OrderInfo,
+  pushClaimCB: PushClaimCB,
+  bnplCB?: BNPLCB
+): void {
+  _pushClaimCB = pushClaimCB;
+  _bnplCB = bnplCB;
+
+  ServicexSdkNative.showBNPL(orderInfo);
 }
 
 const serviceX = {
@@ -244,6 +308,8 @@ const serviceX = {
   clearCache,
   showPassport,
   showServiceInstance,
+  getBNPLAvailability,
+  showBNPL,
 };
 
 export default serviceX;

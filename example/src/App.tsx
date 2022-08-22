@@ -3,26 +3,34 @@ import { useEffect, useState } from 'react';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import {
-  StyleSheet,
-  View,
+  Alert,
   Button,
-  Text,
   FlatList,
   Image,
-  TouchableOpacity,
-  TextInput,
+  Platform,
   SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import serviceX, {
+  CurrencyType,
   OfferData,
   ProductType,
   RedemptionStatus,
+  UserPayload,
 } from 'servicex-rn';
 import type { serviceXThemeConfig } from '../../src/theme';
+import type { OrderInfoResponse, PaymentRecipient, TotalAmount } from './type';
 
+const ENV = 'SANDBOX';
+
+// Offer
 const API_KEY =
   '7kx6vx9p9gZmqrtvHjRTOiSXMkAfZB3s5u3yjLehQHQCtjWrjAk9XlQHR2IOqpuR';
-const ENV = 'SANDBOX';
 const PUSH_CLAIM_URL =
   'https://sandbox-demo-api.credify.dev/housecare/push-claims';
 const DEMO_USER_URL =
@@ -30,11 +38,31 @@ const DEMO_USER_URL =
 const MARKET_NAME = 'housecare';
 const MARKET_ID = '039f059a-3d58-4592-b359-834f5fe9a442';
 
+// BNPL
+const BNPL_API_KEY =
+  'UwbxwqQXnY66dtQm57Bt98la4AwSQodUeMyNThny4aQ7SVoN9IDrhctBCkgWdt6W';
+const BNPL_PUSH_CLAIM_URL =
+  'https://sandbox-demo-api.credify.dev/bnpl-consumer/push-claims';
+const BNPL_DEMO_USER_URL =
+  'https://sandbox-demo-api.credify.dev/bnpl-consumer/demo-user';
+const BNPL_CREATE_ORDER_URL =
+  'https://sandbox-demo-api.credify.dev/bnpl-consumer/create-order';
+const BNPL_MARKET_NAME = 'BNPL Consumer';
+const BNPL_MARKET_ID = '8319dd85-7b57-4455-a8dc-5fb1d142a400';
+
+enum FlowType {
+  NONE,
+  OFFER,
+  BNPL,
+}
+
 export default function App() {
   const [user, setUser] = useState<any>(null);
+  const [userPayload, setUserPayload] = useState<UserPayload>();
   const [idText, onChangeText] = useState<string>('');
   const [offersData, setOffers] = useState<OfferData[]>([]);
   const [isLoading, showLoading] = useState<boolean>(false);
+  const [selectedFlow, setSelectedFlow] = useState<FlowType>(FlowType.NONE);
 
   const customTheme: serviceXThemeConfig = {
     color: {
@@ -83,9 +111,22 @@ export default function App() {
   };
 
   useEffect(() => {
-    serviceX.initialize(API_KEY, ENV, MARKET_NAME, customTheme);
-    getDemoUsers();
-  }, []);
+    if (selectedFlow === FlowType.OFFER) {
+      serviceX.initialize(API_KEY, MARKET_ID, ENV, MARKET_NAME, customTheme);
+    } else if (selectedFlow === FlowType.BNPL) {
+      serviceX.initialize(
+        BNPL_API_KEY,
+        BNPL_MARKET_ID,
+        ENV,
+        BNPL_MARKET_NAME,
+        customTheme
+      );
+    }
+
+    if (selectedFlow !== FlowType.NONE) {
+      getDemoUsers();
+    }
+  }, [selectedFlow]);
 
   async function offerListHandler() {
     if (!user) {
@@ -107,6 +148,8 @@ export default function App() {
     serviceX.showPassport(
       async (localId: string, credifyId: string) => {
         try {
+          updateCredifyId(credifyId);
+
           const res = await pushClaim(localId, credifyId);
           console.log({ res });
           serviceX.setPushClaimRequestStatus(true);
@@ -130,6 +173,8 @@ export default function App() {
     serviceX.showPromotionOffers(
       async (localId: string, credifyId: string) => {
         try {
+          updateCredifyId(credifyId);
+
           const res = await pushClaim(localId, credifyId);
           console.log({ res });
           serviceX.setPushClaimRequestStatus(true);
@@ -147,7 +192,13 @@ export default function App() {
     setOffers([]);
     showLoading(true);
     try {
-      const res = await fetch(`${DEMO_USER_URL}?id=${idText}`);
+      let url = DEMO_USER_URL;
+      if (selectedFlow === FlowType.BNPL) {
+        url = BNPL_DEMO_USER_URL;
+      }
+      console.log('Get user url', url);
+
+      const res = await fetch(`${url}?id=${idText}`);
       const _user = await res.json();
       setUser(_user);
       const userProfile = {
@@ -160,6 +211,7 @@ export default function App() {
         full_name: _user.fullName,
       };
       onChangeText(_user.id);
+      setUserPayload(userProfile);
       serviceX.setUserProfile(userProfile);
     } catch (error) {
       console.log(error);
@@ -172,6 +224,8 @@ export default function App() {
       offerId,
       async (localId: string, credifyId: string) => {
         try {
+          updateCredifyId(credifyId);
+
           const res = await pushClaim(localId, credifyId);
           console.log({ res });
           serviceX.setPushClaimRequestStatus(true);
@@ -180,7 +234,7 @@ export default function App() {
         }
       },
       async (result: RedemptionStatus) => {
-        console.log('**** redemtion result = ' + result);
+        showMessage(`Redemption result: ${result}`);
         await getDemoUsers();
         await offerListHandler();
       }
@@ -188,12 +242,18 @@ export default function App() {
   }
 
   async function pushClaim(localId: string, credifyId: string) {
+    let url = PUSH_CLAIM_URL;
+    if (selectedFlow === FlowType.BNPL) {
+      url = BNPL_PUSH_CLAIM_URL;
+    }
+    console.log('Push claim url', url);
+
     const body = {
       id: localId,
       credify_id: credifyId,
     };
     try {
-      const res = await fetch(PUSH_CLAIM_URL, {
+      const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -226,50 +286,255 @@ export default function App() {
     );
   };
 
+  const checkBNPLAvailability = async () => {
+    if (!user) {
+      return;
+    }
+
+    showLoading(true);
+
+    try {
+      const res = await serviceX.getBNPLAvailability();
+      const isAvailable = res.isAvailable;
+      showMessage(`isAvailable: ${isAvailable}`);
+    } catch (error) {
+      console.log({ error });
+    }
+
+    showLoading(false);
+  };
+
+  const createOrderInfo = (userId: string) => {
+    const paymentRecipient: PaymentRecipient = {
+      name: 'bank_name',
+      number: '213232323',
+      branch: 'bank_branch',
+      bank: 'bank_bank',
+    };
+
+    const orderLines = [
+      {
+        name: 'Diane 35 - Bayer (H/21v)',
+        reference_id: 'reference_id_1',
+        image_url: 'https://apharma.vn/wp-content/uploads/Diane-35.png',
+        product_url: 'https://apharma.vn/wp-content/uploads/Diane-35.png',
+        quantity: 40,
+        unit_price: { value: '115000', currency: CurrencyType.VND },
+        subtotal: { value: `${115000 * 20}`, currency: CurrencyType.VND },
+        measurement_unit: 'EA',
+      },
+      {
+        name: 'Marvelon Bayer (H/21v)',
+        reference_id: 'reference_id_2',
+        image_url:
+          'https://images.fpt.shop/unsafe/fit-in/600x600/filters:quality(90):fill(white)/nhathuoclongchau.com/images/product/2021/05/00004687-marvelon-h3-vi-7225-60ad_large.jpg',
+        product_url:
+          'https://images.fpt.shop/unsafe/fit-in/600x600/filters:quality(90):fill(white)/nhathuoclongchau.com/images/product/2021/05/00004687-marvelon-h3-vi-7225-60ad_large.jpg',
+        quantity: 70,
+        unit_price: { value: '63100', currency: CurrencyType.VND },
+        subtotal: { value: `${63100 * 100}`, currency: CurrencyType.VND },
+        measurement_unit: 'EA',
+      },
+    ];
+
+    const totalAmount: TotalAmount = {
+      value: orderLines
+        .reduce(
+          (partialSum, item) => partialSum + Number(item.subtotal.value),
+          0
+        )
+        .toString(),
+      currency: CurrencyType.VND,
+    };
+
+    return {
+      reference_id: `reference_id_${new Date().getTime()}`,
+      total_amount: totalAmount,
+      order_lines: orderLines,
+      payment_recipient: paymentRecipient,
+      user_id: userId,
+    };
+  };
+
+  const createOrder = async (onResult: (info: OrderInfoResponse) => void) => {
+    const orderInfo = createOrderInfo(user?.id || '');
+    try {
+      const res = await fetch(BNPL_CREATE_ORDER_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderInfo),
+      });
+      onResult(await res.json());
+    } catch (error) {
+      console.log('error', error);
+      throw error;
+    }
+  };
+
+  const startBNPL = async () => {
+    try {
+      showLoading(true);
+      await createOrder((info) => {
+        showLoading(false);
+
+        serviceX.showBNPL(
+          {
+            orderId: info.id,
+            orderAmount: {
+              value: info.totalAmount.value,
+              currency: info.totalAmount.currency as CurrencyType,
+            },
+          },
+          async (localId: string, credifyId: string) => {
+            try {
+              updateCredifyId(credifyId);
+
+              const res = await pushClaim(localId, credifyId);
+              console.log({ res });
+              serviceX.setPushClaimRequestStatus(true);
+            } catch (error) {
+              serviceX.setPushClaimRequestStatus(false);
+            }
+          },
+          (status, orderId, _) => {
+            showMessage(`status: ${status}, orderId: ${orderId}`);
+          }
+        );
+      });
+    } catch (e) {
+      console.log('Cannot create order');
+    }
+  };
+
+  const showDetails = () => {
+    serviceX.showServiceInstance(
+      BNPL_MARKET_ID,
+      [ProductType.BNPL_CONSUMER],
+      () => {
+        console.log('Detail page is dismissed');
+      }
+    );
+  };
+
+  const showMessage = (message: string) => {
+    console.log('showMessage', message);
+    if (Platform.OS === 'android') {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    } else {
+      Alert.alert(message);
+    }
+  };
+
+  const updateCredifyId = (credifyId: string) => {
+    const newUser = {
+      ...userPayload,
+      credify_id: credifyId,
+    };
+    setUserPayload(newUser);
+    serviceX.setUserProfile(newUser);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ marginTop: 10 }} />
-      <Button onPress={getDemoUsers} title="Get Demo user" color="#841584" />
+      {selectedFlow === FlowType.OFFER && (
+        <View>
+          <View style={{ marginTop: 10 }} />
+          <Button
+            onPress={getDemoUsers}
+            title="Get Demo user"
+            color="#841584"
+          />
 
-      <View style={{ marginTop: 10 }} />
-      <Button
-        onPress={offerListHandler}
-        title="Get offer list"
-        color="#841584"
-      />
+          <View style={{ marginTop: 10 }} />
+          <Button
+            onPress={offerListHandler}
+            title="Get offer list"
+            color="#841584"
+          />
 
-      <View style={{ marginTop: 10 }} />
-      <Button
-        onPress={showPromotionOffersHandler}
-        title="Show Promotion Offers"
-        color="#841584"
-      />
+          <View style={{ marginTop: 10 }} />
+          <Button
+            onPress={showPromotionOffersHandler}
+            title="Show Promotion Offers"
+            color="#841584"
+          />
 
-      <View style={{ marginTop: 10 }} />
-      <Button
-        onPress={showPassportHandler}
-        title="Show Passport"
-        color="#841584"
-      />
+          <View style={{ marginTop: 10 }} />
+          <Button
+            onPress={showPassportHandler}
+            title="Show Passport"
+            color="#841584"
+          />
 
-      <View style={{ marginTop: 10 }} />
-      <Button
-        onPress={showServiceDetailHandler}
-        title="Show Service Detail"
-        color="#841584"
-      />
+          <View style={{ marginTop: 10 }} />
+          <Button
+            onPress={showServiceDetailHandler}
+            title="Show Service Detail"
+            color="#841584"
+          />
+        </View>
+      )}
 
-      <Text>Current user ID (Empty the input to get random user)</Text>
-      <TextInput
-        style={{ borderWidth: 1, borderColor: 'grey' }}
-        onChangeText={onChangeText}
-        value={idText.toString()}
-      />
-      <FlatList
-        data={offersData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id!!}
-      />
+      {selectedFlow === FlowType.BNPL && (
+        <View>
+          <View style={{ marginTop: 10 }} />
+          <Button
+            onPress={getDemoUsers}
+            title="Get Demo user"
+            color="#841584"
+          />
+
+          <View style={{ marginTop: 10 }} />
+          <Button
+            onPress={checkBNPLAvailability}
+            title="Check BNPL availability"
+            color="#841584"
+          />
+
+          <View style={{ marginTop: 10 }} />
+          <Button onPress={startBNPL} title="Start BNPL" color="#841584" />
+
+          <View style={{ marginTop: 10 }} />
+          <Button onPress={showDetails} title="Show Details" color="#841584" />
+        </View>
+      )}
+
+      {selectedFlow !== FlowType.NONE && (
+        <View>
+          <Text>Current user ID (Empty the input to get random user)</Text>
+          <TextInput
+            style={{ borderWidth: 1, borderColor: 'grey' }}
+            onChangeText={onChangeText}
+            value={idText.toString()}
+          />
+          <FlatList
+            data={offersData}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id!!}
+          />
+        </View>
+      )}
+
+      {selectedFlow === FlowType.NONE && (
+        <View>
+          <View style={{ marginTop: 10 }} />
+          <Button
+            onPress={() => setSelectedFlow(FlowType.OFFER)}
+            title="Offer Flow"
+            color="#841584"
+          />
+
+          <View style={{ marginTop: 10 }} />
+          <Button
+            onPress={() => setSelectedFlow(FlowType.BNPL)}
+            title="BNPL Flow"
+            color="#841584"
+          />
+        </View>
+      )}
+
       <Spinner visible={isLoading} textContent={'Loading...'} />
     </SafeAreaView>
   );

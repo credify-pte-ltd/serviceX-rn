@@ -1,11 +1,13 @@
 package com.servicexsdkrn.util
 
+import android.util.Log
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import one.credify.sdk.ServiceXThemeConfig
 import one.credify.sdk.ThemeColor
 import one.credify.sdk.ThemeFont
+import one.credify.sdk.core.model.ProductType
 
 object Parser {
   fun parseFloatValueFromReadableMap(map: ReadableMap?, key: String): Float? {
@@ -94,6 +96,25 @@ object Parser {
     for (i: Int in 0 until size) {
       when (array.getType(i)) {
         ReadableType.String -> array.getString(i)?.let { arrayList.add(it) }
+        else -> throw java.lang.Exception("Item in Product types must be a String type")
+      }
+    }
+    return arrayList
+  }
+
+  fun toProductTypeList(array: ReadableArray): ArrayList<ProductType> {
+    val arrayList = ArrayList<ProductType>()
+    for (i: Int in 0 until array.size()) {
+      when (array.getType(i)) {
+        ReadableType.String -> {
+          val str = array.getString(i)
+          ProductType.values().forEach { item ->
+            if (item.value == str) {
+              arrayList.add(item)
+              return@forEach
+            }
+          }
+        }
         else -> throw java.lang.Exception("Item in Product types must be a String type")
       }
     }
