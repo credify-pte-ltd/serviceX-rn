@@ -1,6 +1,6 @@
 {
   "name": "servicex-rn",
-  "version": "0.16.3",
+  "version": "0.17.0",
   "description": "A serviceX sdk for react-native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
