@@ -1,5 +1,6 @@
 package com.servicexsdkrn
 
+import android.annotation.SuppressLint
 import one.credify.sdk.core.request.GetOfferListParam
 import one.credify.sdk.core.callback.OfferListCallback
 import one.credify.sdk.core.model.*
@@ -9,7 +10,6 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.google.gson.Gson
 import com.servicexsdkrn.util.Parser
 import one.credify.sdk.*
-import java.lang.Exception
 import kotlin.collections.ArrayList
 
 class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
@@ -29,6 +29,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
   enum class EventType(val rawValue: String) {
     COMPLETION("completion"),
     REDEEM_COMPLETED("redeemCompleted"),
+    BNPL_REDEEM_COMPLETED("bnplRedeemCompleted"),
     PUSH_CLAIM_TOKEN("pushClaimToken"),
   }
 
@@ -69,6 +70,22 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
     sendEvent(payload = payload)
   }
 
+  private fun sendBNPLRedeemedOfferEvent(
+    status: RedemptionResult,
+    orderId: String,
+    isPaymentCompleted: Boolean
+  ) {
+    val payload = createEventPayload(
+      type = EventType.BNPL_REDEEM_COMPLETED.rawValue,
+      payload = Arguments.createMap().apply {
+        putString("status", status.name)
+        putString("orderId", orderId)
+        putBoolean("isPaymentCompleted", isPaymentCompleted)
+      }
+    )
+    sendEvent(payload = payload)
+  }
+
   private fun sendCompletionEvent() {
     val payload = createEventPayload(type = EventType.COMPLETION.rawValue, payload = null)
     sendEvent(payload = payload)
@@ -77,6 +94,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun initialize(
     apiKey: String,
+    marketId: String,
     environment: String,
     marketName: String,
     packageVersion: String,
@@ -89,6 +107,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
       withApiKey(apiKey)
       withContext(reactApplicationContext)
       withEnvironment(Environment.valueOf(environment))
+      withMarketId(marketId)
       if (themObj != null) {
         withTheme(themObj)
       }
@@ -104,7 +123,7 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
       countryCode = mUserProfile?.phone?.countryCode,
       localId = mUserProfile?.id!!,
       credifyId = mUserProfile?.credifyId,
-      productTypes = Parser.toArrayList(productTypes)
+      productTypes = Parser.toProductTypeList(productTypes)
     )
 
     CredifySDK.instance.offerApi.getOfferList(
@@ -281,7 +300,6 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
     CredifySDK.instance.passportApi.showServiceInstance(
       context = context,
       userProfile = userProfile,
-      marketId = marketId,
       productTypeList = types,
       callback = object : CredifySDK.PassportPageCallback {
         override fun onShow() {
@@ -289,6 +307,71 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
         }
 
         override fun onClose() {
+          sendCompletionEvent()
+        }
+      }
+    )
+  }
+
+  @SuppressLint("CheckResult")
+  @ReactMethod
+  fun getBNPLAvailability(promise: Promise) {
+    val userProfile = mUserProfile ?: return
+    CredifySDK.instance.bnplApi.getBNPLAvailability(userProfile = userProfile)
+      .subscribe(
+        { bnplInfo ->
+          val gson = Gson()
+          val json = gson.toJson(bnplInfo)
+          promise.resolve(json);
+        },
+        { throwable ->
+          promise.reject(throwable);
+        }
+      )
+  }
+
+  @ReactMethod
+  fun showBNPL(orderDict: ReadableMap) {
+    val context = currentActivity ?: return
+    val userProfile = mUserProfile ?: return
+    val orderId = orderDict.getString("orderId")
+    val orderAmountDict = orderDict.getMap("orderAmount")
+    if (orderId == null || orderAmountDict == null)
+      return
+
+    val value = orderAmountDict.getString("value")
+    val currencyStr = orderAmountDict.getString("currency")
+    if (value == null || currencyStr == null)
+      return
+
+    val orderInfo = OrderInfo(
+      orderId = orderId,
+      orderAmount = FiatCurrency(
+        value = value,
+        currency = CurrencyType.valueOf(currencyStr)
+      ),
+    )
+
+    CredifySDK.instance.bnplApi.showBNPL(
+      context = context,
+      userProfile = userProfile,
+      orderInfo = orderInfo,
+      pushClaimCallback = object : CredifySDK.PushClaimCallback {
+        override fun onPushClaim(
+          credifyId: String,
+          resultCallback: CredifySDK.PushClaimResultCallback
+        ) {
+          mPushClaimResultCallback = resultCallback
+          sendPushClaimTokenEvent(localId = userProfile.id, credifyId = credifyId)
+        }
+      },
+      bnplPageCallback = object : CredifySDK.BNPLPageCallback {
+        override fun onClose(
+          status: RedemptionResult,
+          orderId: String,
+          isPaymentCompleted: Boolean
+        ) {
+          sendBNPLRedeemedOfferEvent(status, orderId, isPaymentCompleted)
           sendCompletionEvent()
         }
       }
