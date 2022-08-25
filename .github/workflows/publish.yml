@@ -25,7 +25,7 @@ jobs:
       - name: Update package.json
         run: |
           git config --global user.name 'credify-devops'
-          git config --global user.email 'dev@credify.one'
+          git config --global user.email 'dev-admin@credify.one'
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB }}@github.com/$GITHUB_REPOSITORY
           git commit -am "Bump version in package.json" --no-verify
           git fetch
