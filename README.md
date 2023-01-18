@@ -112,6 +112,14 @@ allprojects {
         jcenter()
         maven { url 'https://www.jitpack.io' }
     }
+
+    // If you face with the below error then you need to un-comment below scripts
+    // java. Lang.NoSuchMethodError: No static method delimiterOffset(Ljava/lang/String;IILjava/lang/String;)I in class Lokhttp3/internal/Util;
+    // configurations.all {
+    //     resolutionStrategy {
+    //         force "com.squareup.okhttp3:okhttp-urlconnection:4.0.1"
+    //     }
+    // }
 }
 ```
 
@@ -212,6 +220,16 @@ serviceX.showPassport(
 serviceX.showServiceInstance(MARKET_ID, [ProductType.BNPL_CONSUMER], () => {
   console.log('Service detail is dismissed');
 });
+
+/**
+ * For BNPL, this starts the BNPL flow
+ * You need to create a new intent on your side. The result will return the `appUrl`.
+ * You should visit here for more detail: https://developers.credify.one/details/market-integration.html#market-integration
+ */
+serviceX.startFlow(appUrl, () => {
+  console.log('BNPL page is dismissed');
+});
+
 ```
 
 > **Important**: In the first callback of the `serviceX.showOfferDetail`, you need to keep `credifyId` on your side. You have to send the `credifyId` to Credify SDK when you use the methods that require `credifyId`. E.g: `serviceX.setUserProfile`. You have to use `serviceX.setUserProfile` to update `credifyId` as soon as possible.

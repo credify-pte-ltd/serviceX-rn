@@ -377,4 +377,19 @@ class ServicexSdkRnModule(reactContext: ReactApplicationContext) :
       }
     )
   }
+
+  @ReactMethod
+  fun startFlow(appUrl: String) {
+    val context = currentActivity ?: return
+
+    CredifySDK.instance.bnplApi.startFlow(
+      context = context,
+      appUrl = appUrl,
+      bnplPageCallback = object : CredifySDK.PageCloseCallback {
+        override fun onClose() {
+          sendCompletionEvent()
+        }
+      }
+    )
+  }
 }

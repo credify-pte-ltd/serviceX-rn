@@ -34,4 +34,13 @@ allprojects {
         jcenter()
         maven { url 'https://www.jitpack.io' }
     }
+
+    // This is for example app(Android only)
+    configurations.all {
+        resolutionStrategy {
+            // Upgrade okhttp-urlconnection to fix the issue that related to okhttp
+            // java. Lang.NoSuchMethodError: No static method delimiterOffset(Ljava/lang/String;IILjava/lang/String;)I in class Lokhttp3/internal/Util;
+            force "com.squareup.okhttp3:okhttp-urlconnection:4.0.1"
+        }
+    }
 }

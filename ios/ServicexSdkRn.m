@@ -15,6 +15,7 @@ RCT_EXTERN_METHOD(setPushClaimRequestStatus:(BOOL)isSuccess)
 RCT_EXTERN_METHOD(supportedEvents)
 RCT_EXTERN_METHOD(getBNPLAvailability:(RCTPromiseResolveBlock*)resolve rejecter:(RCTPromiseRejectBlock*)reject)
 RCT_EXTERN_METHOD(showBNPL:(NSDictionary *)orderInfo)
+RCT_EXTERN_METHOD(startFlow:(NSString *)appUrl)
 
 @end
 

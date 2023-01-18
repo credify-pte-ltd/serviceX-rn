@@ -94,6 +94,7 @@ type ServicexSdkRnType = {
   showServiceInstance(marketId: string, productTypes: ProductType[]): void;
   getBNPLAvailability(): Promise<string>;
   showBNPL(orderInfo: OrderInfo): void;
+  startFlow(appUrl: string): void;
 };
 
 const ServicexSdkNative = NativeModules.ServicexSdkRn as ServicexSdkRnType;
@@ -278,6 +279,9 @@ export function initialize(
   subscribeEvent();
 }
 
+/**
+ * @deprecated It'll be removed in the future.
+ */
 export async function getBNPLAvailability(): Promise<BNPLInfo> {
   try {
     const jsonString = await ServicexSdkNative.getBNPLAvailability();
@@ -287,6 +291,9 @@ export async function getBNPLAvailability(): Promise<BNPLInfo> {
   }
 }
 
+/**
+ * @deprecated It'll be removed in the future. Using 'startFlow' method instead
+ */
 export function showBNPL(
   orderInfo: OrderInfo,
   pushClaimCB: PushClaimCB,
@@ -296,6 +303,12 @@ export function showBNPL(
   _bnplCB = bnplCB;
 
   ServicexSdkNative.showBNPL(orderInfo);
+}
+
+export function startFlow(appUrl: string, callback: DismissCB): void {
+  _dismissCB = callback;
+
+  ServicexSdkNative.startFlow(appUrl);
 }
 
 const serviceX = {
@@ -310,6 +323,7 @@ const serviceX = {
   showServiceInstance,
   getBNPLAvailability,
   showBNPL,
+  startFlow,
 };
 
 export default serviceX;

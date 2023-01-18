@@ -24,7 +24,7 @@ import serviceX, {
   UserPayload,
 } from 'servicex-rn';
 import type { serviceXThemeConfig } from '../../src/theme';
-import type { OrderInfoResponse, PaymentRecipient, TotalAmount } from './type';
+import type { PaymentRecipient, TotalAmount } from './type';
 
 const ENV = 'SANDBOX';
 
@@ -45,8 +45,8 @@ const BNPL_PUSH_CLAIM_URL =
   'https://sandbox-demo-api.credify.dev/bnpl-consumer/push-claims';
 const BNPL_DEMO_USER_URL =
   'https://sandbox-demo-api.credify.dev/bnpl-consumer/demo-user';
-const BNPL_CREATE_ORDER_URL =
-  'https://sandbox-demo-api.credify.dev/bnpl-consumer/create-order';
+const BNPL_CREATE_INTENT_URL =
+  'https://sandbox-demo-api.credify.dev/bnpl-consumer/intents';
 const BNPL_MARKET_NAME = 'BNPL Consumer';
 const BNPL_MARKET_ID = '8319dd85-7b57-4455-a8dc-5fb1d142a400';
 
@@ -286,30 +286,15 @@ export default function App() {
     );
   };
 
-  const checkBNPLAvailability = async () => {
-    if (!user) {
-      return;
-    }
-
-    showLoading(true);
-
-    try {
-      const res = await serviceX.getBNPLAvailability();
-      const isAvailable = res.isAvailable;
-      showMessage(`isAvailable: ${isAvailable}`);
-    } catch (error) {
-      console.log({ error });
-    }
-
-    showLoading(false);
-  };
-
-  const createOrderInfo = (userId: string) => {
+  const createOrderInfo = () => {
     const paymentRecipient: PaymentRecipient = {
-      name: 'bank_name',
-      number: '213232323',
-      branch: 'bank_branch',
-      bank: 'bank_bank',
+      type: 'BANK_ACCOUNT',
+      bank_account: {
+        name: 'bank_name',
+        number: '213232323',
+        branch: 'bank_branch',
+        bank: 'bank_bank',
+      }
     };
 
     const orderLines = [
@@ -318,10 +303,11 @@ export default function App() {
         reference_id: 'reference_id_1',
         image_url: 'https://apharma.vn/wp-content/uploads/Diane-35.png',
         product_url: 'https://apharma.vn/wp-content/uploads/Diane-35.png',
-        quantity: 40,
+        quantity: 20,
         unit_price: { value: '115000', currency: CurrencyType.VND },
         subtotal: { value: `${115000 * 20}`, currency: CurrencyType.VND },
         measurement_unit: 'EA',
+        category: 'MOBILE_DEVICE',
       },
       {
         name: 'Marvelon Bayer (H/21v)',
@@ -332,8 +318,9 @@ export default function App() {
           'https://images.fpt.shop/unsafe/fit-in/600x600/filters:quality(90):fill(white)/nhathuoclongchau.com/images/product/2021/05/00004687-marvelon-h3-vi-7225-60ad_large.jpg',
         quantity: 70,
         unit_price: { value: '63100', currency: CurrencyType.VND },
-        subtotal: { value: `${63100 * 100}`, currency: CurrencyType.VND },
+        subtotal: { value: `${63100 * 70}`, currency: CurrencyType.VND },
         measurement_unit: 'EA',
+        category: 'MOBILE_DEVICE',
       },
     ];
 
@@ -352,21 +339,42 @@ export default function App() {
       total_amount: totalAmount,
       order_lines: orderLines,
       payment_recipient: paymentRecipient,
-      user_id: userId,
     };
   };
 
-  const createOrder = async (onResult: (info: OrderInfoResponse) => void) => {
-    const orderInfo = createOrderInfo(user?.id || '');
+  const createIntent = async (): Promise<{ id: string; appUrl: string }> => {
     try {
-      const res = await fetch(BNPL_CREATE_ORDER_URL, {
+      const payload = JSON.stringify({
+        type: 'BNPL',
+        bnpl_order: createOrderInfo(),
+        user: {
+          id: `${user.id}`,
+          phone: {
+            phone_number: user.phoneNumber,
+            country_code: user.phoneCountryCode,
+          },
+          credify_id: user.credifyId,
+          first_name: user.firstName,
+          last_name: user.lastName,
+          full_name: user.fullName,
+          name: user.name,
+          email: user.email,
+        },
+        service: {
+          ui: {
+            theme: customTheme
+          }
+        }
+      });
+      const res = await fetch(BNPL_CREATE_INTENT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(orderInfo),
+        body: payload,
       });
-      onResult(await res.json());
+      const result = await res.json();
+      return { id: result.id, appUrl: result.appUrl };
     } catch (error) {
       console.log('error', error);
       throw error;
@@ -376,35 +384,21 @@ export default function App() {
   const startBNPL = async () => {
     try {
       showLoading(true);
-      await createOrder((info) => {
-        showLoading(false);
+      const result = await createIntent();
+      showLoading(false);
 
-        serviceX.showBNPL(
-          {
-            orderId: info.id,
-            orderAmount: {
-              value: info.totalAmount.value,
-              currency: info.totalAmount.currency as CurrencyType,
-            },
-          },
-          async (localId: string, credifyId: string) => {
-            try {
-              updateCredifyId(credifyId);
+      console.log("Intent info", result);
 
-              const res = await pushClaim(localId, credifyId);
-              console.log({ res });
-              serviceX.setPushClaimRequestStatus(true);
-            } catch (error) {
-              serviceX.setPushClaimRequestStatus(false);
-            }
-          },
-          (status, orderId, _) => {
-            showMessage(`status: ${status}, orderId: ${orderId}`);
-          }
-        );
-      });
+      // Without using setTimeout, cannot open a the page in iOS
+      // iOS message: Attempt to present <UINavigationController: 0x7ff09f027800> on <UIViewController: 0x7ff09f80c7d0> (from <UIViewController: 0x7ff09f80c7d0>) which is already presenting <RCTModalHostViewController: 0x7ff09fa1ff60>.
+      setTimeout(() => {
+        serviceX.startFlow(result.appUrl, () => {
+          console.log('BNPL page is closed');
+        });
+      }, 0);
     } catch (e) {
-      console.log('Cannot create order');
+      showLoading(false);
+      console.log('Cannot create order', e);
     }
   };
 
@@ -483,13 +477,6 @@ export default function App() {
           <Button
             onPress={getDemoUsers}
             title="Get Demo user"
-            color="#841584"
-          />
-
-          <View style={{ marginTop: 10 }} />
-          <Button
-            onPress={checkBNPLAvailability}
-            title="Check BNPL availability"
             color="#841584"
           />
 

@@ -531,7 +531,21 @@ class ServicexSdkRn: RCTEventEmitter {
                 }
             }
         }
-        
-        
+    }
+    
+    @objc(startFlow:)
+    func startFlow(appUrl: NSString){
+        DispatchQueue.main.async {
+            guard let vc = UIApplication.shared.keyWindow?.rootViewController else {
+                print("There is no view controller")
+                return
+            }
+
+            if let bnplIns = self.bnplIns as? serviceX.BNPL {
+                bnplIns.presentModallyFlow(from: vc, appUrl: appUrl as String, completionHandler: {[weak self] in
+                    self?.sendCompletionEvent()
+                })
+            }
+        }
     }
 }

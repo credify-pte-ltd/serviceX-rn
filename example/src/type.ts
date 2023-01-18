@@ -17,6 +17,11 @@ export interface TotalAmount {
 }
 
 export interface PaymentRecipient {
+  type: string;
+  bank_account?: PaymentRecipientDetail;
+}
+
+export interface PaymentRecipientDetail {
   name: string;
   number: string;
   branch: string;
